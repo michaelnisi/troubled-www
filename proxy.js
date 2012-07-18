@@ -1,11 +1,12 @@
 module.exports = proxy
 
 var http = require('http')
-  , balancer = require('./balancer')
+  , config = require('./config')
+  , Pool = require('poolee')
+  , pool = new Pool(http, config.endpoints, config.pool)
 
-function proxy (port, hostname, backlog, callback) {
-  var server = http.createServer(function(req, res) {
-    balancer.pipe(req).pipe(res)
+function proxy (req, res) {
+  pool.request(req, function (err, pRes) {
+    pRes.pipe(res)
   })
-  
-  server.listen(port, hostname, backlog, callback)
+}
