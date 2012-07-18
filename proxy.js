@@ -6,7 +6,7 @@ var http = require('http')
   , pool = new Pool(http, config.endpoints, config.pool)
 
 function proxy (req, res) {
-  pool.request(req, function (err, pRes) {
+  pool.request(req.url, function (err, pRes) {
     pRes.pipe(res)
   })
 }

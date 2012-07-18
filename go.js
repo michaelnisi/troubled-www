@@ -1,14 +1,13 @@
-var worker = require('./worker.js')
-  , ports = ['8080', '8081', '8082']
+var config = require('./config') 
+  , ports = config.ports
   , bouncy = require('bouncy')
   , i = 0
+  , port
 
-ports.forEach(function (port) {
-  worker(port)
-})  
-  
 bouncy(function (req, bounce) {
-  bounce(ports[i++])
-  if (i >= 2) i = 0
+  port = ports[i++]
+  console.log(port)
+  bounce(port)
+  if (i > 2) i = 0
 }).listen(8000);
 
