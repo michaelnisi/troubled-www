@@ -5,7 +5,7 @@ var resolve = require('path').resolve
   , config = require('./config.js')
 
 function site (req, res) {
-  var file = resolve(config.static + req.url)
+  var file = resolve(config.target + req.url)
     , ext = file.split('.')[1]
 
   if (req.url != '/' && !ext) {
