@@ -1,6 +1,5 @@
 var resolve = require('path').resolve
   , config = require('./config.dev')
-  , source = '/Users/michael/workspace/michaelnisi'
 
 exports.source = config.source
 exports.target = config.target
@@ -12,8 +11,8 @@ exports.ports = [
 ]
 
 exports.delay = 3600000
-exports.tweet = resolve(source, 'data', 'tweet.json')
-exports.likes = resolve(source, 'data', 'likes.json')
+exports.tweet = resolve(config.source, 'data', 'tweet.json')
+exports.likes = resolve(config.source, 'data', 'likes.json')
 
 exports.github = [
   '207.97.227.253'
