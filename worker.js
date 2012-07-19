@@ -1,8 +1,4 @@
-module.exports = worker
+var server = require('./server.js')
+  , route = require('./routes/site.js')
 
-var http = require('http')
-  , site = require('./site.js')
-
-function worker (port) {
-  return http.createServer(site).listen(port)
-}
+server(route) 
