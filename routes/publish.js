@@ -48,14 +48,11 @@ function validate (req, callback) {
   })
 
   req.on('end', function () {
-    if (!data) return callback(false)
-
-    if (!isGitHub(req.connection.remoteAddress)) {
+    if (!data || !isGitHub(req.connection.remoteAddress)) {
       return callback(false)
     } 
 
     var value = data.split('payload=')[1]
-
     if (!value) {
       return callback(false)
     }
@@ -70,7 +67,7 @@ function validate (req, callback) {
       return callback(false)
     }
 
-    return callback(true)
+    callback(true)
   })
 }
 

@@ -7,5 +7,7 @@ var server = require('./server.js')
 server(route)
 
 setInterval(function () {
-  request('http://localhost:' + port)
+  request('http://localhost:' + port, function (err) {
+    if (err) console.error(err)
+  })
 }, config.delay)
