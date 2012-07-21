@@ -1,14 +1,13 @@
 var resolve = require('path').resolve
-  , config = require('./config.dev')
+  , config = require('./config.' + process.env.NODE_ENV)
 
 exports.source = config.source
 exports.target = config.target
 
-exports.ports = [
-  '127.0.0.1:8080'
-, '127.0.0.1:8081'
-, '127.0.0.1:8082'
-]
+exports.ports = config.ports
+
+exports.hook = config.hook
+exports.publisher = config.publisher
 
 exports.delay = 3600000
 exports.tweet = resolve(config.source, 'data', 'tweet.json')
