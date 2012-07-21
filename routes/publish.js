@@ -7,25 +7,35 @@ var config = require('../config.js')
 
 function publish (req, res) {
   validate(req, function (isValid) {
-    
-    if (!isValid) {
-      return res.end(http.STATUS_CODES[400] + '\n')
-    } else {
-      var source = config.source
-        , target = config.target
+    var code
 
-      pull(source, function (err) {
+    if (!isValid) {
+      code = http.STATUS_CODES[400]
+      res.writeHead(code)
+      return res.end(code + '\n')
+    }
+
+    var source = config.source
+      , target = config.target
+
+    pull(source, function (err) {
+      if (err) {
+        console.error(err)
+        code = http.STATUS_CODES[500]
+        res.writeHead(code)
+        return res.end(code + '\n')
+      }
+
+      blake(source, target, function (err) {
+        code = http.STATUS_CODES[204]
         if (err) {
           console.error(err)
-          return res.end(http.STATUS_CODES[500] + '\n')
+          code = http.STATUS_CODES[500]
         }
-
-        blake(source, target, function (err) {
-          if (err) console.error(err)
-          res.end(http.STATUS_CODES[204] + '\n')
-        })
+        res.writeHead(code)
+        res.end(code + '\n')
       })
-    }
+    })
   })
 }
 
