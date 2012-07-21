@@ -12,11 +12,11 @@ function pull (path, callback) {
   })
   
   me.stdout.on('data', function (data) {
-    console.error('stdout: ' + data);
+    console.log('stdout: ' + data)
   })
 
   me.stderr.on('data', function (data) {
-    console.log('stderr: ' + data);
+    console.error('stderr: ' + data)
   })
 
   return me
