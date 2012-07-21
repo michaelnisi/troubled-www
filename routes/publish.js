@@ -48,6 +48,8 @@ function validate (req, callback) {
   })
 
   req.on('end', function () {
+    return callback(true)
+    
     if (!data || !isGitHub(req.connection.remoteAddress)) {
       return callback(false)
     } 

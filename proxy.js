@@ -8,8 +8,7 @@ bouncy(function (req, bounce) {
   if (req.url === config.hook) return bounce(config.publisher)
 
   port = ports[i++]
-  console.log(port)
   bounce(port)
-  if (i >== ports.length) i = 0
+  if (i >= ports.length) i = 0
 }).listen(8000);
 
