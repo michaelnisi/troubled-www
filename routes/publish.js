@@ -1,34 +1,31 @@
 module.exports = publish
 
-var spawn = require('child_process').spawn
-  , config = require('../config.js')
+var config = require('../config.js')
   , blake = require('blake')
+  , http = require('http')
+  , pull = require('../pull.js')
 
 function publish (req, res) {
   validate(req, function (isValid) {
-    res.writeHead(200)
-    res.end()
     
     if (!isValid) {
-      return console.error('Invalid post-receive request')
+      return res.end(http.STATUS_CODES[400] + '\n')
     } else {
       var source = config.source
         , target = config.target
 
       pull(source, function (err) {
-        if (err) return console.error(err)
-        process.chdir('/')
+        if (err) {
+          console.error(err)
+          return res.end(http.STATUS_CODES[500] + '\n')
+        }
+
         blake(source, target, function (err) {
-          console.log('OK')
+          if (err) console.error(err)
+          res.end(http.STATUS_CODES[204] + '\n')
         })
       })
     }
-  })
-}
-
-function pull (path, callback) {
-  spawn('git', ['pull'], { cwd: path }).on('exit', function (code) {
-    return callback(code === 0 ? null : new Error(code))
   })
 }
 
@@ -48,8 +45,6 @@ function validate (req, callback) {
   })
 
   req.on('end', function () {
-    return callback(true)
-    
     if (!data || !isGitHub(req.connection.remoteAddress)) {
       return callback(false)
     } 

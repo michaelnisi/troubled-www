@@ -1,4 +1,4 @@
-exports.source = 'Users/michael/workspace/michaelnisi'
+exports.source = '/Users/michael/workspace/michaelnisi'
 exports.target = '/tmp/michaelnisi-site'
 
 exports.hook = '/publish'
