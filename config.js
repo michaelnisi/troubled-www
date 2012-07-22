@@ -4,7 +4,8 @@ var resolve = require('path').resolve
 exports.source = config.source
 exports.target = config.target
 
-exports.ports = config.ports
+exports.port = config.port
+exports.ports = config.ports // workers
 
 exports.hook = config.hook
 exports.publisher = config.publisher
