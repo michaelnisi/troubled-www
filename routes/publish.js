@@ -46,7 +46,7 @@ function isGitHub (address) {
 }
 
 function validate (req, callback) {
-  if (req.method != 'POST') return callback(false)
+  if (req.method !== 'POST') return callback(false)
  
   var data = ''
 

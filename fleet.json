@@ -1,8 +1,0 @@
-{
-  "remote": {
-    "default": {
-      "hub": "localhost:7000",
-      "secret": "beepboop"
-    }
-  }
-}
