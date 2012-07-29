@@ -2,12 +2,10 @@ var server = require('./server.js')
   , route = require('./routes/update.js')
   , config = require('./config.js')
   , request = require('request')
-  , port = process.argv.splice(2)[0]
-
-server(route)
+  , url = 'http://localhost:' + server(route).port
 
 setInterval(function () {
-  request('http://localhost:' + port, function (err) {
+  request(url, function (err) {
     if (err) console.error(err)
   })
 }, config.delay)

@@ -8,5 +8,9 @@ if (!port) {
 }
 
 function server (route) {
-  return http.createServer(route).listen(port)
+  var me = http.createServer(route).listen(port)
+  
+  me.port = port
+
+  return me
 }

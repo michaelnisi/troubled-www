@@ -1,3 +1,6 @@
+
+if (!process.env.NODE_ENV) throw new Error('NODE_ENV undefined')
+
 var resolve = require('path').resolve
   , config = require('./config.' + process.env.NODE_ENV)
 
