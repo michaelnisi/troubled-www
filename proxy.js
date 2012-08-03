@@ -5,8 +5,6 @@ var config = require('./config')
   , i = 0
 
 bouncy(function (req, bounce) {
-  if (req.url === config.hook) return bounce(config.publisher)
-  
   port = ports[i++]
   bounce(port)
   if (i >= ports.length) i = 0
