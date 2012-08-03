@@ -40,7 +40,7 @@ function publish (req, res) {
 }
 
 function isGitHub (address) {
-  return iconfig.github.some(function (a) {
+  return config.github.some(function (a) {
     return address === a
   })
 }
