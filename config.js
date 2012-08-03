@@ -11,7 +11,6 @@ exports.port = config.port
 exports.ports = config.ports // workers
 
 exports.hook = config.hook
-exports.publisher = config.publisher
 
 exports.delay = 3600000
 exports.tweet = resolve(config.source, 'data', 'tweet.json')
