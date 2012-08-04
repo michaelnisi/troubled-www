@@ -3,7 +3,7 @@ module.exports = publish
 var config = require('../config.js')
   , blake = require('blake')
   , http = require('http')
-  , pull = require('../pull.js')
+  , pull = require('gitpull')
 
 function publish (req, res) {
   validate(req, function (isValid) {
