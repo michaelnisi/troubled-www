@@ -1,0 +1,22 @@
+{
+  "name": "troubled-www",
+  "version": "0.0.0",
+  "description": "services that drive my site",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/michaelnisi/troubled-www.git"
+  },
+  "dependencies": {
+    "bouncy": ">=1.1.x",
+    "gitpull": ">=0.0.1",
+    "filed": ">=0.0.6",
+    "request": ">=2.9.x"
+  },
+  "author": "Michael Nisi",
+  "license": "MIT"
+}
