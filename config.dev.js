@@ -1,5 +1,5 @@
 exports.source = '/Users/michael/workspace/michaelnisi'
-exports.target = '/tmp/michaelnisi-site'
+exports.target = '/tmp/troubled-site'
 
 exports.port = 8000
 exports.hook = '/publish'

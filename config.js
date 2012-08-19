@@ -1,8 +1,11 @@
 
-if (!process.env.NODE_ENV) throw new Error('NODE_ENV undefined')
+if (!process.env.NODE_ENV) {
+  console.warn('NODE_ENV not set, assuming production.')  
+  process.env.NODE_ENV = 'production'
+}
 
 var resolve = require('path').resolve
-  , config = require('./config.' + process.env.NODE_ENV)
+  , config = require('./config.' + process.env.NODE_ENV || 'production')
 
 exports.source = config.source
 exports.target = config.target
