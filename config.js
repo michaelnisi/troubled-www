@@ -5,7 +5,7 @@ if (!process.env.NODE_ENV) {
 }
 
 var resolve = require('path').resolve
-  , config = require('./config.' + process.env.NODE_ENV || 'production')
+  , config = require('./config.' + process.env.NODE_ENV)
 
 exports.source = config.source
 exports.target = config.target
