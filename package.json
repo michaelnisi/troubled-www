@@ -1,6 +1,6 @@
 {
   "name": "troubled-www",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "publish my blog",
   "scripts": {
     "start": "node server.js",
