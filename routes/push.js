@@ -1,10 +1,16 @@
+module.exports = push
+
 var pushup = require('pushup')
   , http = require('http')
   , getProps = require('pushup/lib/getProps.js')
   , show = require('pushup/lib/show')
   , config = require('../config.js')
   
-module.exports = function (req, res) {
+function push (req, res) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return res.error(405)
+  }
+  
   var props = getProps()
     , target = config.target
 

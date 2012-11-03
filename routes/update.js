@@ -1,3 +1,5 @@
+// update - update latest tweet and likes
+
 module.exports = update
 
 var blake = require('blake')
