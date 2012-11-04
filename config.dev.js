@@ -1,6 +1,7 @@
-exports.source = '/Users/michael/workspace/michaelnisi'
-exports.target = '/tmp/michaelnisi-site'
+exports.source = '/Users/michael/workspace/troubled'
+exports.target = '/tmp/troubled-site'
 
 exports.port = 8000
-exports.hook = '/publish'
-exports.ports = [8080, 8081, 8082]
+exports.ports = {
+  '/generate':8080  
+}

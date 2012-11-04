@@ -1,3 +1,4 @@
 fleet.json
 config.production.js
 node_modules
+.zshrc

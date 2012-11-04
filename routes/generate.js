@@ -7,11 +7,11 @@ var config = require('../config.js')
   , join = require('path').join
   , Reader = require('fstream').Reader
   , cop = require('cop')
+  , source = config.source
+  , target = config.target
 
 function generate (req, res) {
-  var source = config.source
-    , target = config.target
-    , props = { path:join(source, 'data') } 
+  var props = { path:join(source, 'data') } 
     , reader = new Reader(props)
 
   reader

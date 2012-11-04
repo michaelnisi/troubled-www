@@ -1,11 +1,9 @@
-module.exports = publish
-
 var config = require('../config.js')
   , blake = require('blake')
   , http = require('http')
   , gitpull = require('gitpull')
 
-function publish (req, res) {
+module.exports = function (req, res) {
   var source = config.source
     , target = config.target
   
@@ -17,23 +15,15 @@ function publish (req, res) {
     res.end(code + '\n')
   }
   
-  validate(req, function (err, hash) {
-    if (err) return end(err)
-    gitpull(source, function (err) {
-      if (err) return end(err)
-      blake(source, target, function (err) {
-        if (err) return end(err)
-        add(function (err) { 
-          if (err) return end(err, 204)
-          commit(hash, function (err) {
-            if (err) return end(err)
-            push(function (err) {
-              end(err, err ? 500 : 400)
-            })
-          })
-        })
-      })
-    })
+  validate(req, function (err) {
+    if (err) {
+      end(err)
+      return
+    }
+   
+    // pull 
+    // generate
+    // push    
   })
 }
 

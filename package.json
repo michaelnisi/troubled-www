@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "publish my blog",
   "scripts": {
-    "start": "node server.js",
+    "start": "node proxy.js",
     "show-conf": "node config.js"
   },
   "repository": {
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "request": "2.9.x",
-    "routes": "0.1.x"
+    "pushup": "0.3.x",
+    "blake": "0.6.x"
   },
   "license": "MIT",
   "author": {
