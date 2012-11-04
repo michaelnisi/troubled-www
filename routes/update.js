@@ -1,14 +1,16 @@
 // update - update latest tweet and likes
 
-module.exports = update
-
 var blake = require('blake')
-  , c = require('../config.js')
+  , cop = require('cop')
+  , config = require('../config.js')
+  , readArray = require('event-stream').readArray
+  , filenames = [config.likes, config.tweet]
+  , source = config.source
+  , target = config.target
 
-function update (req, res) {
-  res.writeHead(200) 
-  res.end()
-  blake(c.source, c.target, c.tweet, c.likes, function (err) {
-    console.log('%s: tweet and likes updated', new Date())  
-  })
+module.exports = function (req, res) {
+  readArray(filenames)
+    .pipe(blake(source, target))
+    .pipe(cop(function (filename) { return filename + '\n' }))
+    .pipe(res)
 }

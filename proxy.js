@@ -18,16 +18,15 @@ bouncy(function (req, bounce) {
     res.end(code + '\n')
   }
    
-  if (normalPathname !== config.hook) return end()
+  if (normalPathname !== config.hook) {
+    end()
+    return
+  }
 
   validate(req, function (err) {
     var port = config.ports['/generate']
-
     err = port ? err : new Error('Invalid Port')
-
-    if (err) return end()
-
-    bounce(port)
+    err ? end() : bounce(port)
   })
 }).listen(config.port)
 
