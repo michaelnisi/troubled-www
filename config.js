@@ -8,9 +8,7 @@ exports.source = config.source
 exports.target = config.target
 
 exports.port = config.port
-exports.ports = config.ports // workers
-
-exports.hook = config.hook
+exports.ports = config.ports 
 
 exports.delay = 3600000
 exports.tweet = resolve(config.source, 'data', 'tweet.json')
