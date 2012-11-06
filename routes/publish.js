@@ -2,7 +2,14 @@
 // publish - publish site
 
 var http = require('http')
+  , child_process = require('child_process')
+  , pushup = require('pushup')
+  , blake = require('blake')
+  , join = require('path').join
+  , Reader = require('fstream').Reader
+  , cop = require('cop')
   , config = require('../config.js')
+  , show = require('pushup/lib/show.js')
   , getProps = require('pushup/lib/getProps.js')
 
 module.exports = function (req, res) {
@@ -30,9 +37,14 @@ module.exports = function (req, res) {
   }
 
   function generate () {
-    blake(source, target, function (err) {
-      err ? end() : add() 
-    })
+    var props = { path:join(source, 'data') } 
+      , reader = new Reader(props)
+
+    reader
+      .pipe(cop('path'))
+      .pipe(blake(source, target))
+      .on('error', end)
+      .on('end', add)
   }
 
   function add () {
@@ -54,7 +66,7 @@ module.exports = function (req, res) {
 
     show(target)
       .on('error', end)
-      .pipe(pushup(props)
+      .pipe(pushup(props))
       .on('error', end)
       .pipe(res)
   }
