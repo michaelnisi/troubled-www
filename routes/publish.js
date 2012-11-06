@@ -22,7 +22,7 @@ module.exports = function (req, res) {
     res.end(message + '\n')
   }
   
-  function pull (callback) {
+  function pull () {
     var options = { cwd:source }
     child_process.exec('git pull', options, function (err) {
       err ? end() : generate()  
