@@ -20,14 +20,14 @@ module.exports = function (req, res) {
 
   validate(req, function (err, msg) {
     message = msg
-    
+
     var code = http.STATUS_CODES[202]
     res.writeHead(code)
     res.end(code + '\n')
-    
+
     pull()
   })
-  
+
   function pull () {
     gitgo(source, ['pull'])
       .on('error', console.error)
@@ -36,7 +36,7 @@ module.exports = function (req, res) {
   }
 
   function generate () {
-    var props = { path:join(source, 'data') } 
+    var props = { path:join(source, 'data') }
       , reader = new Reader(props)
 
     reader
@@ -81,7 +81,7 @@ function validate (req, callback) {
     callback(null, 'No Message')
     return
   }
-  
+
   if (req.method !== 'POST') {
     callback(new Error('POST Expected'))
     return
@@ -97,7 +97,7 @@ function validate (req, callback) {
     if (!data || !isGitHub(req.connection.remoteAddress)) {
       callback(new Error('Invalid Remote Address'))
       return
-    } 
+    }
 
     var value = data.split('payload=')[1]
     if (!value) {
