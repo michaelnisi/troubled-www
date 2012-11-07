@@ -4,36 +4,35 @@
 var http = require('http')
   , child_process = require('child_process')
   , pushup = require('pushup')
+  , show = require('pushup/lib/show')
+  , getProps = require('pushup/lib/getProps')
   , blake = require('blake')
   , join = require('path').join
   , Reader = require('fstream').Reader
   , cop = require('cop')
+  , gitgo = require('gitpull')
   , config = require('../config.js')
-  , show = require('pushup/lib/show.js')
-  , getProps = require('pushup/lib/getProps.js')
 
 module.exports = function (req, res) {
-  var hash = null
+  var message = null
     , source = config.source
     , target = config.target
 
-  validate(req, function (after, err) {
-    hash = after
-    err ? end() : pull()
-  })
-
-  function end (err) {
-    var code = http.STATUS_CODES[404]
-      , message = err ? err.message : code
+  validate(req, function (err, msg) {
+    message = msg
+    
+    var code = http.STATUS_CODES[202]
     res.writeHead(code)
-    res.end(message + '\n')
-  }
+    res.end(code + '\n')
+    
+    pull()
+  })
   
   function pull () {
-    var options = { cwd:source }
-    child_process.exec('git pull', options, function (err) {
-      err ? end() : generate()  
-    })
+    gitgo(source, ['pull'])
+      .on('error', console.error)
+      .on('end', generate)
+      .pipe(process.stdout)
   }
 
   function generate () {
@@ -43,38 +42,43 @@ module.exports = function (req, res) {
     reader
       .pipe(cop('path'))
       .pipe(blake(source, target))
-      .on('error', end)
+      .on('error', console.error)
       .on('end', add)
+      .pipe(cop(function (filename) { return filename + '\n' }))
+      .pipe(process.stdout)
   }
 
   function add () {
-    var options = { cwd:target }
-    child_process.exec('git add .', options, function (err) {
-      err ? end() : commit() 
-    })
+    gitgo(target, ['add', '.'])
+      .on('error', console.error)
+      .on('end', commit)
+      .pipe(process.stdout)
   }
 
   function commit () {
-    var options = { cwd:target }
-    child_process.exec('git commit -m ' + hash, options, function (err) {
-      err ? end() : push() 
-    })
+    gitgo(target, ['commit', '-m',  message])
+      .on('error', console.error)
+      .on('end', push)
+      .pipe(process.stdout)
   }
 
   function push () {
     var props = getProps()
 
+    process.chdir(target)
+
     show(target)
-      .on('error', end)
+      .on('error', console.error)
       .pipe(pushup(props))
-      .on('error', end)
-      .pipe(res)
+      .on('error', console.error)
+      .pipe(cop(function (filename) { return filename + '\n' }))
+      .pipe(process.stdout)
   }
 }
 
 function validate (req, callback) {
   if (process.env.NODE_ENV === 'dev') {
-    callback()
+    callback(null, 'No Message')
     return
   }
   
@@ -113,6 +117,6 @@ function validate (req, callback) {
       return
     }
 
-    callback(payload.after)
+    callback(null, payload.after)
   })
 }

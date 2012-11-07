@@ -1,5 +1,5 @@
 exports.source = '/Users/michael/workspace/troubled'
-exports.target = '/tmp/troubled-site'
+exports.target = '/Users/michael/workspace/troubled-site'
 
 exports.port = 8000
 
