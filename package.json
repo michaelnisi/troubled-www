@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "publish my blog",
   "scripts": {
-    "start": "node proxy.js",
     "show-conf": "node config.js"
   },
   "repository": {
@@ -11,6 +10,8 @@
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
   "dependencies": {
+    "fleet": "0.1.x",
+    "seaport": "1.1.x",
     "request": "2.9.x",
     "pushup": "0.3.x",
     "gitgo": ""
