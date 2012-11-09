@@ -4,5 +4,9 @@ exports.target = '/Users/michael/workspace/troubled-site'
 exports.port = 8000
 
 exports.ports = {
-  '/publish':8080  
+  '/publish':8080
+}
+
+exports.urls = {
+  upload: 'http://localhost:8081'
 }

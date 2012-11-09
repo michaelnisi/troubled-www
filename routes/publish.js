@@ -2,15 +2,13 @@
 // publish - publish site
 
 var http = require('http')
-  , child_process = require('child_process')
-  , pushup = require('pushup')
-  , show = require('pushup/lib/show')
-  , getProps = require('pushup/lib/getProps')
   , blake = require('blake')
+  , gitgo = require('gitgo')
+  , querystring = require('querystring')
+  , request = require('request')
   , join = require('path').join
   , Reader = require('fstream').Reader
   , cop = require('cop')
-  , gitgo = require('gitpull')
   , config = require('../config.js')
 
 module.exports = function (req, res) {
@@ -43,35 +41,16 @@ module.exports = function (req, res) {
       .pipe(cop('path'))
       .pipe(blake(source, target))
       .on('error', console.error)
-      .on('end', add)
+      .on('end', upload)
       .pipe(cop(function (filename) { return filename + '\n' }))
       .pipe(process.stdout)
   }
 
-  function add () {
-    gitgo(target, ['add', '.'])
-      .on('error', console.error)
-      .on('end', commit)
-      .pipe(process.stdout)
-  }
+  function upload () {
+    var url = config.urls.upload
 
-  function commit () {
-    gitgo(target, ['commit', '-m',  message])
+    request.post(url + '?message=' + message)
       .on('error', console.error)
-      .on('end', push)
-      .pipe(process.stdout)
-  }
-
-  function push () {
-    var props = getProps()
-
-    process.chdir(target)
-
-    show(target)
-      .on('error', console.error)
-      .pipe(pushup(props))
-      .on('error', console.error)
-      .pipe(cop(function (filename) { return filename + '\n' }))
       .pipe(process.stdout)
   }
 }
@@ -99,7 +78,7 @@ function validate (req, callback) {
       return
     }
 
-    var value = data.split('payload=')[1]
+    var value = querystring.parse(data).payload
     if (!value) {
       callback(new Error('Missing Parameter'))
       return
