@@ -11,10 +11,8 @@
   },
   "dependencies": {
     "fleet": "0.1.x",
-    "seaport": "1.1.x",
     "request": "2.9.x",
     "pushup": "0.3.x",
-    "gitgo": ""
     "blake": "0.6.x"
   },
   "license": "MIT",
