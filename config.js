@@ -3,16 +3,17 @@ if (!process.env.NODE_ENV) throw new Error('NODE_ENV undefined')
 
 var resolve = require('path').resolve
   , config = require('./config.' + process.env.NODE_ENV)
+  , source = config.source
+  , target = config.target
 
-exports.source = config.source
-exports.target = config.target
+exports.source = source
+exports.target = target
 
-exports.port = config.port
-exports.ports = config.ports 
+exports.urls = config.urls
 
-exports.delay = 3600000
-exports.tweet = resolve(config.source, 'data', 'tweet.json')
-exports.likes = resolve(config.source, 'data', 'likes.json')
+exports.delay = config.delay || 3600000
+exports.tweet = resolve(source, 'data', 'tweet.json')
+exports.likes = resolve(source, 'data', 'likes.json')
 
 exports.github = [
   '207.97.227.253'

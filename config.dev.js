@@ -3,10 +3,8 @@ exports.target = '/Users/michael/workspace/troubled-site'
 
 exports.port = 8000
 
-exports.ports = {
-  '/publish':8080
-}
-
 exports.urls = {
-  upload: 'http://localhost:8081'
+  publish: { protocol:'http', hostname:'localhost', port:8080, open:true }
+, upload:  { protocol:'http', hostname:'localhost', port:8081 }
+, update:  { protocol:'http', hostname:'localhost', port:8082 }
 }

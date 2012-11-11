@@ -12,7 +12,7 @@ bouncy(function (req, bounce) {
     , pathname = parsed.pathname
     , normalPathname = path.normalize(pathname).replace(/\\/g, '/')
     , port = config.ports[normalPathname]
-    , err = port ? null : new Error('Invalid Port')
+    , err = port && port.open ? null : new Error('Invalid Port')
 
   function end () {
     var code = http.STATUS_CODES[404]
@@ -21,6 +21,5 @@ bouncy(function (req, bounce) {
     res.end(code + '\n')
   }
 
-  err = port ? err : new Error('Invalid Port')
   err ? end() : bounce(port)
 }).listen(config.port)

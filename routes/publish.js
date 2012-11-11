@@ -3,6 +3,7 @@
 
 var http = require('http')
   , blake = require('blake')
+  , url = require('url')
   , gitgo = require('gitgo')
   , querystring = require('querystring')
   , request = require('request')
@@ -47,9 +48,13 @@ module.exports = function (req, res) {
   }
 
   function upload () {
-    var url = config.urls.upload
+    var upload = config.urls.upload
 
-    request.post(url + '?message=' + message)
+    upload.query = querystring.stringify({ message: message })
+
+    var uri = url.format(upload)
+
+    request.post(uri)
       .on('error', console.error)
       .pipe(process.stdout)
   }

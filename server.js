@@ -1,15 +1,17 @@
-module.exports = server
+
+// server - generic server
 
 var http = require('http')
-  , port = process.argv.splice(2)[0]
 
-if (!port) {
-  throw new Error('No port provided.')
-}
+module.exports = function (route, port) {
+  port = port || process.argv.splice(2)[0]
 
-function server (route) {
+  if (!port) {
+    throw new Error('No port provided')
+  }
+
   var me = http.createServer(route).listen(port)
-  
+
   me.port = port
 
   return me
