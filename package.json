@@ -1,21 +1,21 @@
 {
   "name": "troubled-www",
-  "version": "0.0.0",
-  "description": "services that drive my blog",
-  "main": "config.js",
+  "version": "0.2.0",
+  "description": "publish my blog",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "show-conf": "node config.js"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
   "dependencies": {
-    "bouncy": ">=1.1.x",
-    "gitpull": ">=0.0.1",
-    "filed": ">=0.0.6",
-    "request": ">=2.9.x"
+    "fleet": "0.1.x",
+    "seaport": "1.1.x",
+    "request": "2.9.x",
+    "pushup": "0.3.x",
+    "gitgo": ""
+    "blake": "0.6.x"
   },
   "license": "MIT",
   "author": {

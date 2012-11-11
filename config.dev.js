@@ -1,6 +1,11 @@
-exports.source = '/Users/michael/workspace/michaelnisi'
-exports.target = '/tmp/troubled-site'
+
+exports.source = '/Users/michael/workspace/troubled'
+exports.target = '/Users/michael/workspace/troubled-site'
 
 exports.port = 8000
-exports.hook = '/publish'
-exports.ports = [8080, 8081, 8082]
+
+exports.urls = {
+  publish: { protocol:'http', hostname:'localhost', port:8080, open:true }
+, upload:  { protocol:'http', hostname:'localhost', port:8081 }
+, update:  { protocol:'http', hostname:'localhost', port:8082 }
+}
