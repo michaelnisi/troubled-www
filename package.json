@@ -1,7 +1,7 @@
 {
   "name": "troubled-www",
   "version": "0.2.0",
-  "description": "publish my blog",
+  "description": "services that drive my personal site",
   "scripts": {
     "show-conf": "node config.js"
   },
