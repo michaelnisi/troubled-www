@@ -10,7 +10,8 @@
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
   "dependencies": {
-    "fleet": "0.1.x",
+    "fstream": "0.1.x",
+    "cop": "0.2.x",
     "request": "2.9.x",
     "bouncy": "1.3.x",
     "pushup": "0.3.x",
