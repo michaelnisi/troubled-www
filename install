@@ -2,12 +2,9 @@
 
 sudo yum update
 
-sudo yum install zsh
-sudo yum install tree
-sudo yum install tmux
+# sudo yum install git
 
 sudo yum install gcc-c++ 
-sudo yum install git
 
 git clone git://github.com/joyent/node.git    
 cd node
@@ -23,5 +20,9 @@ target=/home/ec2-user/troubled-site
 mkdir $target ; cd $target ; git init
 
 cd
+
+sudo yum install zsh
+sudo yum install tree
+sudo yum install tmux
 
 sudo npm install -g fleet
