@@ -19,6 +19,6 @@ sudo make install
 
 git clone git://github.com/michaelnisi/troubled-www.git
 git clone git://github.com/michaelnisi/troubled.git
-$target=/home/ec2-user/troubled-site
+target=/home/ec2-user/troubled-site
 mkdir $target ; cd $target ; git init
 cd
