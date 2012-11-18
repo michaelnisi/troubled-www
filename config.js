@@ -1,6 +1,6 @@
 
 if (!process.env.NODE_ENV) {
-  console.warn('NODE_ENV not set, assuming production.')  
+  console.warn('NODE_ENV not set, assuming production.')
   process.env.NODE_ENV = 'production'
 }
 
@@ -11,7 +11,7 @@ var resolve = require('path').resolve
 
 exports.source = source
 exports.target = target
-
+exports.port = config.port
 exports.urls = config.urls
 
 exports.delay = config.delay || 3600000

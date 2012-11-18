@@ -16,5 +16,4 @@ npm-debug.log
 fleet.json
 config.production.js
 credentials
-
-.zshrc
+cluster
