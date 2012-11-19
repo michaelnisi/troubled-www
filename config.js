@@ -12,7 +12,7 @@ var resolve = require('path').resolve
 exports.source = source
 exports.target = target
 
-exports.port = config.port || 8000
+exports.port = config.port || 8080
 
 var urls = Object.create(null)
 
