@@ -12,7 +12,7 @@ bouncy(function (req, bounce) {
     , pathname = parsed.pathname
     , normalPathname = path.normalize(pathname).replace(/\\/g, '/')
     , url = config.urls[normalPathname]
-    , port = url && url.open ? url.port || null
+    , port = url && url.open ? url.port : null
     , err = port ? null : new Error('Unknown URL')
 
   function end () {
