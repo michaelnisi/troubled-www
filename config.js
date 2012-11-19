@@ -11,8 +11,23 @@ var resolve = require('path').resolve
 
 exports.source = source
 exports.target = target
-exports.port = config.port
-exports.urls = config.urls
+
+exports.port = config.port || 8000
+
+var urls = Object.create(null)
+
+urls['publish/'] = { port: 8081, open: true }
+urls['upload/']  = { port: 8082 }
+urls['update/']  = { port: 8083 }
+
+var url
+var keys = Object.keys(urls)
+keys.forEach(function (key) {
+  url = urls[key]
+  url.protocol = 'http'
+  url.hostname = 'localhost'
+})
+exports.urls = config.urls || urls
 
 exports.delay = config.delay || 3600000
 exports.tweet = resolve(source, 'data', 'tweet.json')
