@@ -10,10 +10,6 @@
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
   "dependencies": {
-    "twitter-text": "1.5.x",
-    "markdown": "0.4.x",
-    "feedparser": "0.10.x",
-    "jade": "0.27.x",
     "event-stream": "3.0.x",
     "fstream": "0.1.x",
     "cop": "0.2.x",
