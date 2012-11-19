@@ -1,10 +1,14 @@
 #!/bin/sh
 
+cd
+
 sudo yum update
 
+# Assuming git is already installed
 # sudo yum install git
 
 sudo yum install gcc-c++ 
+sudo yum install make
 
 git clone git://github.com/joyent/node.git    
 cd node
