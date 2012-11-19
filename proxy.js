@@ -11,8 +11,9 @@ bouncy(function (req, bounce) {
   var parsed = url.parse(req.url)
     , pathname = parsed.pathname
     , normalPathname = path.normalize(pathname).replace(/\\/g, '/')
-    , port = config.ports[normalPathname]
-    , err = port && port.open ? null : new Error('Invalid Port')
+    , url = config.urls[normalPathname]
+    , port = url && url.open ? url.port || null
+    , err = port ? null : new Error('Unknown URL')
 
   function end () {
     var code = http.STATUS_CODES[404]
