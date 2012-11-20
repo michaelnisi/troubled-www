@@ -11,9 +11,9 @@ var resolve = require('path').resolve
   , urls = Object.create(null)
   , url = null
 
+exports.env = process.env.NODE_ENV
 exports.source = source
 exports.target = target
-
 exports.port = config.port || 8080
 
 urls.publish = { port: 8081, open: true }
