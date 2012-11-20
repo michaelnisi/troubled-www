@@ -3,7 +3,7 @@
 
 var http = require('http')
   , url = require('url')
-  , normalize = require('lib/normalize.js')
+  , normalize = require('./lib/normalize.js')
   , bouncy = require('bouncy')
   , config = require('./config.js')
 
