@@ -8,21 +8,19 @@ var resolve = require('path').resolve
   , config = require('./config.' + process.env.NODE_ENV)
   , source = config.source
   , target = config.target
+  , urls = Object.create(null)
+  , url = null
 
 exports.source = source
 exports.target = target
 
 exports.port = config.port || 8080
 
-var urls = Object.create(null)
+urls.publish = { port: 8081, open: true }
+urls.upload  = { port: 8082 }
+urls.update  = { port: 8083 }
 
-urls['publish/'] = { port: 8081, open: true }
-urls['upload/']  = { port: 8082 }
-urls['update/']  = { port: 8083 }
-
-var url
-var keys = Object.keys(urls)
-keys.forEach(function (key) {
+Object.keys(urls).forEach(function (key) {
   url = urls[key]
   url.protocol = 'http'
   url.hostname = 'localhost'
