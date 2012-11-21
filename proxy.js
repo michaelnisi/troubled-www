@@ -6,6 +6,7 @@ var http = require('http')
   , normalize = require('./lib/normalize.js')
   , bouncy = require('bouncy')
   , config = require('./config.js')
+  , validate = require('./lib/validate.js')
 
 bouncy(function (req, bounce) {
   var parsed = url.parse(req.url)
@@ -24,5 +25,7 @@ bouncy(function (req, bounce) {
     res.end(code + '\n')
   }
 
-  err ? end() : bounce(port)
+  validate(req, function (err, payload) {
+    err ? end() : bounce(port)
+  })
 }).listen(config.port)
