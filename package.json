@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "services that drive my personal site",
   "scripts": {
-    "test": "tap test/*",
+    "test": "export NODE_ENV=dev ; tap --tap --stderr test/*",
     "show-conf": "node config.js"
   },
   "repository": {

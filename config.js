@@ -15,6 +15,7 @@ exports.env = process.env.NODE_ENV
 exports.source = source
 exports.target = target
 exports.port = config.port || 8080
+exports.validate = config.validate !== undefined ? config.validate : true
 
 urls.publish = { port: 8081, open: true }
 urls.upload  = { port: 8082 }
