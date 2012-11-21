@@ -40,9 +40,7 @@ test('no payload', function (t) {
 
   var req
 
-  while (addresses.length) {
-    address = addresses.shift()
-
+  while (address = addresses.shift()) {
     req = new IncomingMessage()
     req.method = 'POST'
     req.connection = { remoteAddress: address }
@@ -55,6 +53,35 @@ test('no payload', function (t) {
   }
 
   t.end()
+})
+
+test('no payload', function (t) {
+  var req = new IncomingMessage()
+
+  req.method = 'POST'
+  req.connection = { remoteAddress: '207.97.227.253' }
+
+  validate(req, function (err, message) {
+    t.equal(err.message, 'Could not Parse Payload')
+    t.end()
+  })
+
+  req.emit('end', 'payload=no')
+})
+
+test('payload', function (t) {
+  var req = new IncomingMessage()
+
+  req.method = 'POST'
+  req.connection = { remoteAddress: '207.97.227.253' }
+
+  validate(req, function (err, message) {
+    t.notok(err, 'should no return error')
+    t.equal(message, 'ok', 'should be after')
+    t.end()
+  })
+
+  req.emit('end', 'payload={ "after": "ok" }')
 })
 
 test('do not validate', function (t) {
