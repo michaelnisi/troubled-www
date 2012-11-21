@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "services that drive my personal site",
   "scripts": {
+    "test": "tap test/*",
     "show-conf": "node config.js"
   },
   "repository": {
