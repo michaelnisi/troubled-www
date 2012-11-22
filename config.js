@@ -3,9 +3,13 @@
 
 var resolve = require('path').resolve
   , url = require('url')
-  , source = '/Users/michael/Workspace/troubled'
+  , fs = require('fs')
+  , source = process.env.TROUBLED_SOURCE
   , target = process.env.TROUBLED_TARGET
   , urls = Object.create(null)
+
+fs.statSync(source)
+fs.statSync(target)
 
 urls.publish = url.parse('http://localhost:8081')
 urls.upload  = url.parse('http://localhost:8082')
