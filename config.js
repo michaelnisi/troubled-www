@@ -3,7 +3,7 @@
 
 var resolve = require('path').resolve
   , url = require('url')
-  , source = process.env.TROUBLED_SOURCE
+  , source = '/Users/michael/Workspace/troubled'
   , target = process.env.TROUBLED_TARGET
   , urls = Object.create(null)
 
