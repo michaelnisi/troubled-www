@@ -7,8 +7,15 @@ var resolve = require('path').resolve
   , source = process.env.TROUBLED_SOURCE
   , target = process.env.TROUBLED_TARGET
 
-fs.statSync(source)
-fs.statSync(target)
+try {
+  if (!fs.statSync(source).isDirectory()
+   || !fs.statSync(target).isDirectory()) {
+     throw(new Error('source and target must be directories'))
+  }
+} catch (err) {
+  console.error(err)
+  return
+}
 
 exports.source = source
 exports.target = target
