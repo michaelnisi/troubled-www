@@ -8,7 +8,8 @@ var resolve = require('path').resolve
   , target = process.env.TROUBLED_TARGET
 
 try {
-  if (!fs.statSync(source).isDirectory()
+  if (!source || !target ||
+      !fs.statSync(source).isDirectory()
    || !fs.statSync(target).isDirectory()) {
      throw(new Error('source and target must be directories'))
   }
