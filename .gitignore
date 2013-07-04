@@ -14,5 +14,5 @@ configure
 npm-debug.log
 
 fleet.json
-credentials
+.credentials
 cluster
