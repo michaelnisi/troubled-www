@@ -1,5 +1,0 @@
-#!/bin/sh
-
-fleet spawn -- node uploader.js
-fleet spawn -- node updater.js
-fleet spawn -- node publisher.js

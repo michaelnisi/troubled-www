@@ -1,7 +1,7 @@
 
 // updater - service that updates tweet and likes
 
-var server = require('./server.js')
+var server = require('./lib/server.js')
   , route = require('./lib/update.js')
   , config = require('./config.js')
   , request = require('request')
