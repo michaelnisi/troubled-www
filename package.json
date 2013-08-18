@@ -12,12 +12,12 @@
   "dependencies": {
     "event-stream": "3.0.x",
     "fstream": "0.1.x",
-    "cop": "0.2.x",
-    "request": "2.9.x",
-    "bouncy": "1.3.x",
+    "cop": "0.3.x",
+    "request": "2.27.x",
+    "bouncy": "3.2.x",
     "pushup": "0.3.x",
-    "gitgo": "0.0.x",
-    "blake": "0.7.x"
+    "gitgo": "0.2.x",
+    "blake": "0.8.x"
   },
   "license": "MIT",
   "author": {
