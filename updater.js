@@ -4,7 +4,7 @@
 var server = require('./lib/server.js')
   , route = require('./lib/update.js')
   , config = require('./config.js')
-  , request = require('request')
+  , http = require('http')
   , format = require('url').format
   , url = config.update
   , port = url.port
@@ -13,7 +13,7 @@ var server = require('./lib/server.js')
 server(route, port)
 
 setInterval(function () {
-  request(uri)
+  http.get(uri)
     .on('error', console.error)
     .pipe(process.stdout)
 }, config.delay)
