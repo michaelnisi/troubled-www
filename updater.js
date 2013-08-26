@@ -6,14 +6,9 @@ var server = require('./lib/server.js')
   , config = require('./config.js')
   , http = require('http')
   , format = require('url').format
-  , url = config.update
+
+var url = config.update
   , port = url.port
   , uri = format(url)
 
 server(route, port)
-
-setInterval(function () {
-  http.get(uri)
-    .on('error', console.error)
-    .pipe(process.stdout)
-}, config.delay)
