@@ -1,7 +1,7 @@
 {
   "name": "troubled-www",
   "version": "0.4.0",
-  "description": "services that drive my personal site",
+  "description": "services that drive my site",
   "scripts": {
     "show-conf": "node config.js"
   },
@@ -14,7 +14,6 @@
     "fstream": "0.1.x",
     "cop": "0.3.x",
     "request": "2.27.x",
-    "bouncy": "3.2.x",
     "pushup": "0.3.x",
     "gitgo": "0.2.x",
     "blake": "0.8.x"
