@@ -25,9 +25,9 @@ exports.delay = 3600000
 exports.tweet = resolve(source, 'data', 'tweet.json')
 exports.likes = resolve(source, 'data', 'likes.json')
 
-exports.publish = url.parse('http://localhost:8081')
-exports.upload  = url.parse('http://localhost:8082')
-exports.update  = url.parse('http://localhost:8083')
+exports.publish = url.parse('http://127.0.0.1:8081')
+exports.upload  = url.parse('http://127.0.0.1:8082')
+exports.update  = url.parse('http://127.0.0.1:8083')
 
 if (module === require.main) {
   console.log(exports)
