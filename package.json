@@ -16,7 +16,7 @@
     "request": "2.27.x",
     "pushup": "0.3.x",
     "gitgo": "0.2.x",
-    "blake": "0.8.x"
+    "blake": "0.8.x",
     "showf": "0.0.x"
   },
   "license": "MIT",
