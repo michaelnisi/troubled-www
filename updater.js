@@ -12,9 +12,3 @@ var url = config.update
   , uri = format(url)
 
 server(route, port)
-
-setInterval(function () {
-  http.get(uri)
-    .on('error', console.error)
-    .pipe(process.stdout)
-}, config.delay)
