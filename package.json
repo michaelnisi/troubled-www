@@ -15,7 +15,7 @@
     "cop": "0.3.x",
     "request": "2.27.x",
     "pushup": "0.4.x",
-    "gitgo": "0.2.x",
+    "gitgo": "0.3.x",
     "blake": "0.8.x",
     "showf": "0.0.x"
   },
