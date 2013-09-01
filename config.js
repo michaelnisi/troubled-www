@@ -4,8 +4,9 @@
 var resolve = require('path').resolve
   , url = require('url')
   , fs = require('fs')
-  , source = process.env.TROUBLED_SOURCE
-  , target = process.env.TROUBLED_TARGET
+  , env = process.env
+  , source = env.TROUBLED_SOURCE
+  , target = env.TROUBLED_TARGET
 
 try {
   if (!source || !target ||
@@ -25,9 +26,12 @@ exports.delay = 3600000
 exports.tweet = resolve(source, 'data', 'tweet.json')
 exports.likes = resolve(source, 'data', 'likes.json')
 
-exports.publish = url.parse('http://127.0.0.1:8081')
-exports.upload  = url.parse('http://127.0.0.1:8082')
-exports.update  = url.parse('http://127.0.0.1:8083')
+exports.publish = url.parse(
+  env.TROUBLED_PUBLISH_URL || 'http://127.0.0.1:8081')
+exports.upload  = url.parse(
+  env.TROUBLED_UPLOAD_URL || 'http://127.0.0.1:8082')
+exports.update  = url.parse(
+  env.TROUBLED_UPDATE_URL || 'http://127.0.0.1:8083')
 
 if (module === require.main) {
   console.log(exports)
