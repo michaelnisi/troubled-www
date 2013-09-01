@@ -25,12 +25,10 @@ exports.target = target
 exports.tweet = resolve(source, 'data', 'tweet.json')
 exports.likes = resolve(source, 'data', 'likes.json')
 
-exports.publish = url.parse(
-  env.TROUBLED_PUBLISH_URL || 'http://127.0.0.1:8081')
-exports.upload  = url.parse(
-  env.TROUBLED_UPLOAD_URL || 'http://127.0.0.1:8082')
-exports.update  = url.parse(
-  env.TROUBLED_UPDATE_URL || 'http://127.0.0.1:8083')
+var ip = 'http://127.0.0.1', p = 8081
+exports.publish = url.parse(env.TROUBLED_PUBLISH_URL || [ip,p++].join(':'))
+exports.upload = url.parse(env.TROUBLED_UPLOAD_URL || [ip,p++].join(':'))
+exports.update = url.parse(env.TROUBLED_UPDATE_URL || [ip,p++].join(':'))
 
 if (module === require.main) {
   console.log(exports)
