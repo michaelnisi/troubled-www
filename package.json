@@ -1,6 +1,6 @@
 {
   "name": "troubled-www",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "services that drive my site",
   "scripts": {
     "show-conf": "node config.js"

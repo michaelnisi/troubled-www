@@ -22,7 +22,6 @@ try {
 exports.source = source
 exports.target = target
 
-exports.delay = 3600000
 exports.tweet = resolve(source, 'data', 'tweet.json')
 exports.likes = resolve(source, 'data', 'likes.json')
 
