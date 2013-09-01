@@ -12,7 +12,6 @@ results
 configure
 
 npm-debug.log
+node_modules
 
-fleet.json
 .env
-cluster
