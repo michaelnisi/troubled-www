@@ -8,6 +8,8 @@ var resolve = require('path').resolve
   , source = env.TROUBLED_SOURCE
   , target = env.TROUBLED_TARGET
 
+console.log(env)
+
 try {
   if (!source || !target ||
       !fs.statSync(source).isDirectory()
