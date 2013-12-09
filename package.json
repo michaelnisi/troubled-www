@@ -1,6 +1,6 @@
 {
   "name": "troubled-www",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "services that drive my site",
   "scripts": {
     "show-conf": "node config.js"
@@ -13,10 +13,9 @@
     "event-stream": "3.0.x",
     "fstream": "0.1.x",
     "cop": "0.3.x",
-    "request": "2.27.x",
     "pushup": "0.4.x",
     "gitgo": "0.3.x",
-    "blake": "0.8.x",
+    "blake": "0.9.x",
     "showf": "0.0.x"
   },
   "license": "MIT",
