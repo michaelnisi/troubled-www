@@ -21,7 +21,7 @@
     </dependency>
 
     <method_context
-      working_directory="/home/troubled/troubled-www">
+      working_directory="/home/node/troubled-www">
       <method_credential
         user="node"
         group="node"
@@ -61,7 +61,7 @@
 
     <template>
       <common_name>
-        <loctext xml:lang="C">troubled_updater</loctext>
+        <loctext xml:lang="C">The Troubled Programmer: Update Service</loctext>
       </common_name>
     </template>
   </service>

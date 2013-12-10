@@ -8,8 +8,6 @@ var resolve = require('path').resolve
   , source = env.TROUBLED_SOURCE
   , target = env.TROUBLED_TARGET
 
-console.log(env)
-
 try {
   if (!source || !target ||
       !fs.statSync(source).isDirectory()
@@ -27,10 +25,13 @@ exports.target = target
 exports.tweet = resolve(source, 'data', 'tweet.json')
 exports.likes = resolve(source, 'data', 'likes.json')
 
-var ip = 'http://127.0.0.1', p = 8081
-exports.publish = url.parse(env.TROUBLED_PUBLISH_URL || [ip,p++].join(':'))
-exports.upload = url.parse(env.TROUBLED_UPLOAD_URL || [ip,p++].join(':'))
-exports.update = url.parse(env.TROUBLED_UPDATE_URL || [ip,p++].join(':'))
+function uri(port) {
+  return ['http://127.0.0.1', port].join(':')
+}
+
+exports.publish = url.parse(uri(8081))
+exports.upload  = url.parse(uri(8082))
+exports.update  = url.parse(uri(8083))
 
 if (module === require.main) {
   console.log(exports)

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
-<service_bundle type="manifest" name="TRB:uploader">
+<service_bundle type="manifest" name="TTB:uploader">
   <service name="site/uploader" type="service" version="1">
     <create_default_instance enabled="true"/>
     <single_instance/>
@@ -21,7 +21,7 @@
     </dependency>
 
     <method_context
-      working_directory="/home/troubled/troubled-www">
+      working_directory="/home/node/troubled-www">
       <method_credential
         user="node"
         group="node"
@@ -61,7 +61,7 @@
 
     <template>
       <common_name>
-        <loctext xml:lang="C">troubled_updater</loctext>
+        <loctext xml:lang="C">The Troubled Programmer: Upload Service</loctext>
       </common_name>
     </template>
   </service>

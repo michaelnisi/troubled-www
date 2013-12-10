@@ -5,13 +5,8 @@
 *.out
 *.pid
 *.gz
-
 pids
 logs
 results
-configure
-
 npm-debug.log
-node_modules
-
 .env
