@@ -1,6 +1,6 @@
 # troubled-www
 
-[![David DM](https://david-dm.org/michaelnisi/troubled-www.png)](http://david-dm.org/michaelnisi/troubled-www)
+[![David DM](https://david-dm.org/michaelnisi/troubled-www.svg)](http://david-dm.org/michaelnisi/troubled-www)
 
 The services that drive my [site](http://troubled.pro).
 
