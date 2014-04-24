@@ -29,7 +29,7 @@ function uri(port) {
   return ['http://127.0.0.1', port].join(':')
 }
 
-exports.publish = url.parse(uri(8081))
+exports.publish = url.parse(env.TROUBLED_PUBLISH_URL|| uri(8081))
 exports.upload  = url.parse(uri(8082))
 exports.update  = url.parse(uri(8083))
 
