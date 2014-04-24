@@ -10,11 +10,11 @@
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
   "dependencies": {
-    "event-stream": "3.0.x",
+    "event-stream": "3.1.x",
     "fstream": "0.1.x",
     "cop": "0.3.x",
     "pushup": "0.4.x",
-    "gitgo": "0.3.x",
+    "gitgo": "0.4.x",
     "blake": "0.9.x",
     "showf": "0.0.x"
   },
