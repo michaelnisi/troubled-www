@@ -3,7 +3,6 @@ var test = require('tap').test
   , fs = require('fs')
   , es = require('event-stream')
   , StringDecoder = require('string_decoder').StringDecoder
-  , decoder = new StringDecoder('utf8')
   , lino = require('../')
 
 test('lc', function (t) {
@@ -63,13 +62,21 @@ test('overflow', function (t) {
 test('none', function (t) {
   var trans = lino()
     , expected = 'Não sou nada.'
-    , actual = null
+    , actual = []
 
   trans.on('readable', function () {
-    actual = decoder.write(trans.read())
-  }).on('end', function () {
-    t.same(actual, expected)
+    var chunk;
+    while (null !== (chunk = trans.read())) {
+      actual.push(dec(chunk))
+    }
+  }).on('finish', function () {
+    t.same(actual.join(), expected)
     t.end()
   })
   trans.end(expected)
 })
+
+var decoder = new StringDecoder('utf8')
+function dec(buf) {
+  return decoder.write(buf)
+}
