@@ -3,6 +3,8 @@
 
 module.exports.start = start
 
+// Pull latest, generate all, and upload to S3.
+
 var util = require('util')
   , stream = require('stream')
 
@@ -94,18 +96,14 @@ Publisher.prototype.generate = function (size) {
 }
 
 Publisher.prototype.commit = function (size) {
-  var cmd = 'git add . ; git commit-a -m "troubled"'
+  var cmd = 'git add . ; git commit -a -m "troubled"'
     , o = psopts(this.target)
     , me = this
-    , count = 0
 
   child_process.exec(cmd, o, function (er, stdout, stderr) {
     me.push(stdout)
-    count++
-    if (count > 0) {
-      me.state = me.pushup
-      me.push('*** pushup\n')
-    }
+    me.state = me.pushup
+    me.push('*** pushup\n')
   })
 }
 
@@ -116,7 +114,7 @@ function diff (dir) {
 
 var pushup = require('pushup')
 function push (dir) {
-  process.chdir(dir) // TODO: Really?
+  process.chdir(dir) // TODO: Terrible! Remove this
   return diff(dir)
     .pipe(pushup())
 }
@@ -136,6 +134,8 @@ Publisher.prototype.end = function (size) {
   this.push(null)
   this.state = null // I'm done
 }
+
+// Update tweet and likes, and upload to S3.
 
 function Updater (opts) {
   if (!(this instanceof Updater)) return new Updater(opts)
@@ -159,14 +159,19 @@ Updater.prototype.update = function (size) {
   var reader = this.reader
   if (!reader) {
     reader = generate(this.source, this.target, files(this.tweet, this.likes))
-    read(this, reader, this.pushup, '*** pushup\n', size)
+    read(this, reader, this.commit, '*** commit\n', size)
   }
   this.reader = reader
 }
 
 Updater.prototype._read = Publisher.prototype._read
+Updater.prototype.commit = Publisher.prototype.commit
 Updater.prototype.pushup = Publisher.prototype.pushup
 Updater.prototype.end = Publisher.prototype.end
+
+// HTTP API
+// GET /publish
+// GET /update
 
 var _opts = require('./conf')
 function opts () {
