@@ -1,8 +1,10 @@
 {
   "name": "troubled-www",
   "version": "0.7.0",
-  "description": "services that drive my site",
+  "description": "generate and publish http://troubled.pro",
   "scripts": {
+    "start": "node start.js > /dev/null & echo $! > .pid",
+    "stop": "kill `< .pid`",
     "show-conf": "node config.js"
   },
   "repository": {
@@ -10,11 +12,10 @@
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
   "dependencies": {
-    "event-stream": "3.1.x",
+    "routes": "1.1.x",
     "fstream": "0.1.x",
     "cop": "0.3.x",
     "pushup": "0.4.x",
-    "gitgo": "0.4.x",
     "blake": "0.9.x",
     "showf": "0.0.x"
   },
