@@ -6,7 +6,6 @@ module.exports.start = start
 var util = require('util')
   , stream = require('stream')
 
-// Build and publish the whole thing.
 function Publisher (opts) {
   if (!(this instanceof Publisher)) return new Publisher(opts)
   stream.Readable.call(this)
@@ -138,7 +137,6 @@ Publisher.prototype.end = function (size) {
   this.state = null // I'm done
 }
 
-// Update latest tweet and likes
 function Updater (opts) {
   if (!(this instanceof Updater)) return new Updater(opts)
   stream.Readable.call(this)
@@ -148,12 +146,19 @@ function Updater (opts) {
 }
 util.inherits(Updater, stream.Readable)
 
-var es = require('event-stream')
+function files () {
+  var chunks = Array.prototype.slice.call(arguments)
+  var files = stream.Readable()
+  files._read = function () {
+    files.push(chunks.shift())
+  }
+  return files
+}
+
 Updater.prototype.update = function (size) {
   var reader = this.reader
   if (!reader) {
-    var files = es.readArray([this.tweet, this.likes])
-    reader = generate(this.source, this.target, files)
+    reader = generate(this.source, this.target, files(this.tweet, this.likes))
     read(this, reader, this.pushup, '*** pushup\n', size)
   }
   this.reader = reader
@@ -162,8 +167,6 @@ Updater.prototype.update = function (size) {
 Updater.prototype._read = Publisher.prototype._read
 Updater.prototype.pushup = Publisher.prototype.pushup
 Updater.prototype.end = Publisher.prototype.end
-
-// Server
 
 var _opts = require('./conf')
 function opts () {
@@ -190,7 +193,6 @@ function router () {
   return _router
 }
 
-// Start HTTP server on port
 function start (port) {
   var http = require('http')
     , url = require('url')

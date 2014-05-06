@@ -42,7 +42,7 @@
     <exec_method
       type="method"
       name="start"
-      exec="/opt/local/bin/node publisher.js &amp;"
+      exec="/opt/local/bin/node start.js &amp;"
       timeout_seconds="10"/>
 
     <exec_method
