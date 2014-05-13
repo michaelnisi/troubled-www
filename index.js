@@ -6,6 +6,10 @@ module.exports.start = start
 var util = require('util')
   , stream = require('stream')
 
+function msg (str) {
+  return 'trb ' + str + '\n'
+}
+
 // Pull latest, generate all, and upload to S3.
 
 function Publisher (opts) {
@@ -13,7 +17,7 @@ function Publisher (opts) {
   stream.Readable.call(this)
   util._extend(this, opts)
   this.state = this.pull
-  this.push('*** pull\n')
+  this.push(msg('pull'))
 }
 util.inherits(Publisher, stream.Readable)
 
@@ -36,24 +40,6 @@ function psopts (cwd) {
   }
 }
 
-var StringDecoder = require('string_decoder').StringDecoder
-  , path = require('path')
-
-function pulled (buf) {
-  var files = [], ext
-  new StringDecoder()
-    .write(buf)
-    .split('\n')
-    .forEach(function (line) {
-      ext = path.extname(line)
-      if (ext) {
-        if (ext !== '.md') return '*'
-        files.push(line)
-      }
-    })
-  return files
-}
-
 Publisher.prototype.pull = function (size) {
   var me = this
     , cmd = 'git pull'
@@ -61,16 +47,9 @@ Publisher.prototype.pull = function (size) {
 
   child_process.exec(cmd, o, function (er, stdout, stderr) {
     ok(er)
-    me.files = pulled(stdout)
-    if (true) {
-      console.log(me.files)
-      me.state = me.end
-      me.push(stdout)
-    } else {
-      me.state = me.copyResources
-      me.push(stdout)
-      me.push('*** copy resources\n')
-    }
+    me.state = me.copyResources
+    me.push(stdout)
+    me.push(msg('copy resources'))
   })
 }
 
@@ -89,6 +68,8 @@ function read (me, reader, next, msg, size) {
 }
 
 var copy = require('blake/lib/copy')
+  , path = require('path')
+
 function copyResources (source, target) {
   return copy(path.join(source, 'resources'), target)
 }
@@ -97,7 +78,7 @@ Publisher.prototype.copyResources = function (size) {
   var reader = this.reader
   if (!reader) {
     reader = copyResources(this.source, this.target)
-    read(this, reader, this.generate, '*** generate\n', size)
+    read(this, reader, this.generate, msg('generate'), size)
   }
   this.reader = reader
 }
@@ -116,7 +97,6 @@ function generate (source, target, files) {
 }
 
 function files (paths) {
-  if (paths.length < 1) return null
   var files = stream.Readable()
   files._read = function () {
     files.push(paths.shift())
@@ -127,8 +107,8 @@ function files (paths) {
 Publisher.prototype.generate = function (size) {
   var reader = this.reader
   if (!reader) {
-    reader = generate(this.source, this.target, files(this.files))
-    read(this, reader, this.pushup, '*** pushup\n', size)
+    reader = generate(this.source, this.target)
+    read(this, reader, this.pushup, msg('pushup'), size)
   }
   this.reader = reader
 }
@@ -142,7 +122,7 @@ Publisher.prototype.commit = function (size) {
     child_process.exec(cmd, o, function (er, stdout, stderr) {
       me.push(stdout)
       me.state = me.end
-      me.push('*** end\n')
+      me.push(msg('end'))
       me.reader = false
     })
     this.reader = true
@@ -168,7 +148,7 @@ Publisher.prototype.pushup = function (size) {
     child_process.exec(cmd, o, function (er, stdout, stderr) {
       ok(er)
       var reader = push(me.target)
-      read(me, reader, me.commit, '*** commit\n', size)
+      read(me, reader, me.commit, msg('commit'), size)
       me.reader = reader
     })
     this.reader = true
@@ -176,7 +156,7 @@ Publisher.prototype.pushup = function (size) {
 }
 
 Publisher.prototype.end = function (size) {
-  this.push('tchau!\n')
+  this.push('ok\n')
   this.push(null)
   this.state = null // I'm done
 }
@@ -188,7 +168,7 @@ function Updater (opts) {
   stream.Readable.call(this)
   util._extend(this, opts)
   this.state = this.update
-  this.push('*** update\n')
+  this.push(msg('update'))
 }
 util.inherits(Updater, stream.Readable)
 
@@ -198,7 +178,7 @@ Updater.prototype.update = function (size) {
   if (!reader) {
     var paths = [this.tweet, this.likes]
     reader = generate(this.source, this.target, files(paths))
-    read(this, reader, this.pushup, '*** pushup\n', size)
+    read(this, reader, this.pushup, msg('pushup'), size)
   }
   this.reader = reader
 }
