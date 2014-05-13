@@ -3,10 +3,10 @@
 
 module.exports.start = start
 
-// Pull latest, generate all, and upload to S3.
-
 var util = require('util')
   , stream = require('stream')
+
+// Pull latest, generate all, and upload to S3.
 
 function Publisher (opts) {
   if (!(this instanceof Publisher)) return new Publisher(opts)
@@ -21,6 +21,12 @@ Publisher.prototype._read = function (size) {
   this.state(size)
 }
 
+var assert = require('assert')
+
+function ok (er) {
+  assert(!er, er ? er.message : undefined)
+}
+
 var child_process = require('child_process')
 
 function psopts (cwd) {
@@ -30,19 +36,43 @@ function psopts (cwd) {
   }
 }
 
+var StringDecoder = require('string_decoder').StringDecoder
+  , path = require('path')
+
+function pulled (buf) {
+  var files = [], ext
+  new StringDecoder()
+    .write(buf)
+    .split('\n')
+    .forEach(function (line) {
+      ext = path.extname(line)
+      if (ext) {
+        if (ext !== '.md') return '*'
+        files.push(line)
+      }
+    })
+  return files
+}
+
 Publisher.prototype.pull = function (size) {
   var me = this
     , cmd = 'git pull'
     , o = psopts(this.source)
 
   child_process.exec(cmd, o, function (er, stdout, stderr) {
-    me.state = me.copyResources
-    me.push(stdout)
-    me.push('*** copy resources\n')
+    ok(er)
+    me.files = pulled(stdout)
+    if (true) {
+      console.log(me.files)
+      me.state = me.end
+      me.push(stdout)
+    } else {
+      me.state = me.copyResources
+      me.push(stdout)
+      me.push('*** copy resources\n')
+    }
   })
 }
-
-var assert = require('assert')
 
 function read (me, reader, next, msg, size) {
   reader.on('readable', function () {
@@ -75,7 +105,6 @@ Publisher.prototype.copyResources = function (size) {
 var blake = require('blake')
   , Reader = require('fstream').Reader
   , cop = require('cop')
-  , path = require('path')
 
 function generate (source, target, files) {
   files = files || new Reader({ path:path.join(source, 'data') })
@@ -86,47 +115,64 @@ function generate (source, target, files) {
     .pipe(cop(function (s) { return s += '\n' }))
 }
 
+function files (paths) {
+  if (paths.length < 1) return null
+  var files = stream.Readable()
+  files._read = function () {
+    files.push(paths.shift())
+  }
+  return files
+}
+
 Publisher.prototype.generate = function (size) {
   var reader = this.reader
   if (!reader) {
-    reader = generate(this.source, this.target)
-    read(this, reader, this.commit, '*** commit\n', size)
+    reader = generate(this.source, this.target, files(this.files))
+    read(this, reader, this.pushup, '*** pushup\n', size)
   }
   this.reader = reader
 }
 
 Publisher.prototype.commit = function (size) {
-  var cmd = 'git add . ; git commit -a -m "troubled"'
-    , o = psopts(this.target)
-    , me = this
-
-  child_process.exec(cmd, o, function (er, stdout, stderr) {
-    me.push(stdout)
-    me.state = me.pushup
-    me.push('*** pushup\n')
-  })
-}
-
-var showf = require('showf')
-function diff (dir) {
-  return showf(dir)
+  var reader = this.reader
+  if (!reader) {
+    var cmd = 'git commit -a -m "trouble ahoy!"'
+      , o = psopts(this.target)
+      , me = this
+    child_process.exec(cmd, o, function (er, stdout, stderr) {
+      me.push(stdout)
+      me.state = me.end
+      me.push('*** end\n')
+      me.reader = false
+    })
+    this.reader = true
+  }
 }
 
 var pushup = require('pushup')
+  , gitstat = require('gitstat')
+
 function push (dir) {
-  process.chdir(dir) // TODO: Terrible! Remove this
-  return diff(dir)
+  process.chdir(dir)
+  return gitstat(dir, 'AM')
     .pipe(pushup())
 }
 
 Publisher.prototype.pushup = function (size) {
   var reader = this.reader
   if (!reader) {
-    reader = push(this.target)
-    read(this, reader, this.end, '*** end\n', size)
-  }
-  this.reader = reader
+    var cmd = 'git add --all'
+      , o = psopts(this.target)
+      , me = this
 
+    child_process.exec(cmd, o, function (er, stdout, stderr) {
+      ok(er)
+      var reader = push(me.target)
+      read(me, reader, me.commit, '*** commit\n', size)
+      me.reader = reader
+    })
+    this.reader = true
+  }
 }
 
 Publisher.prototype.end = function (size) {
@@ -146,20 +192,13 @@ function Updater (opts) {
 }
 util.inherits(Updater, stream.Readable)
 
-function files () {
-  var chunks = Array.prototype.slice.call(arguments)
-  var files = stream.Readable()
-  files._read = function () {
-    files.push(chunks.shift())
-  }
-  return files
-}
 
 Updater.prototype.update = function (size) {
   var reader = this.reader
   if (!reader) {
-    reader = generate(this.source, this.target, files(this.tweet, this.likes))
-    read(this, reader, this.commit, '*** commit\n', size)
+    var paths = [this.tweet, this.likes]
+    reader = generate(this.source, this.target, files(paths))
+    read(this, reader, this.pushup, '*** pushup\n', size)
   }
   this.reader = reader
 }
@@ -168,6 +207,7 @@ Updater.prototype._read = Publisher.prototype._read
 Updater.prototype.commit = Publisher.prototype.commit
 Updater.prototype.pushup = Publisher.prototype.pushup
 Updater.prototype.end = Publisher.prototype.end
+
 
 // HTTP API
 // GET /publish

@@ -1,7 +1,11 @@
 {
   "name": "troubled-www",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "generate and publish http://troubled.pro",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "start": "node start.js > /dev/null & echo $! > .pid",
     "stop": "kill `< .pid`",
@@ -11,18 +15,25 @@
     "type": "git",
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
-  "dependencies": {
-    "routes": "1.1.x",
-    "fstream": "0.1.x",
-    "cop": "0.3.x",
-    "pushup": "0.4.x",
-    "blake": "0.9.x",
-    "showf": "0.0.6"
-  },
   "license": "MIT",
   "author": {
     "name": "Michael Nisi",
     "email": "michael.nisi@gmail.com",
     "url": "http://michaelnisi.com"
+  },
+  "dependencies": {
+    "routes": "1.1.x",
+    "gitstat": "0.0.x",
+    "fstream": "0.1.x",
+    "cop": "0.3.x",
+    "pushup": "0.4.x",
+    "blake": "0.9.x"
+  },
+  "devDependencies": {
+    "tap": "0.4.x",
+    "rimraf": "2.2.x"
+  },
+  "engines": {
+    "node": ">=0.10"
   }
 }
