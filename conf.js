@@ -14,7 +14,6 @@ try {
      assert(fs.statSync(dir).isDirectory())
   })
 } catch (er) {
-  console.error(er)
   throw(new Error('source and target must be directories'))
 }
 
@@ -23,6 +22,8 @@ exports.target = target
 
 exports.tweet = path.resolve(source, 'data', 'tweet.json')
 exports.likes = path.resolve(source, 'data', 'likes.json')
+
+exports.port = process.env.NODE_ENV === 'production' ? 80 : 8080
 
 if (module === require.main) {
   console.log(exports)

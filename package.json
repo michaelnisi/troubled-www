@@ -3,9 +3,6 @@
   "version": "0.7.1",
   "description": "generate and publish http://troubled.pro",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "start": "node start.js > /dev/null & echo $! > .pid",
     "stop": "kill `< .pid`",
@@ -28,10 +25,6 @@
     "cop": "0.3.x",
     "pushup": "0.4.x",
     "blake": "0.9.x"
-  },
-  "devDependencies": {
-    "tap": "0.4.x",
-    "rimraf": "2.2.x"
   },
   "engines": {
     "node": ">=0.10"

@@ -32,7 +32,7 @@
           value="/home/node" />
         <envvar
           name="PATH"
-          value="/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin" />
+          value="/opt/local/bin" />
         <envvar
           name="NODE_ENV"
           value="production" />

@@ -1,1 +1,1 @@
-require('./').start(8080)
+require('./').start()

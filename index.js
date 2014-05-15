@@ -3,12 +3,12 @@
 
 module.exports.start = start
 
-var util = require('util')
-  , stream = require('stream')
-
 function msg (str) {
   return 'trb ' + str + '\n'
 }
+
+var util = require('util')
+  , stream = require('stream')
 
 // Pull latest, generate all, and upload to S3.
 
@@ -219,6 +219,7 @@ function router () {
 }
 
 function start (port) {
+  port = port || opts().port
   var http = require('http')
     , url = require('url')
     , r = router()
