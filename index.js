@@ -120,7 +120,9 @@ Publisher.prototype.commit = function (size) {
       , o = psopts(this.target)
       , me = this
     child_process.exec(cmd, o, function (er, stdout, stderr) {
+      if (er) me.push(er.message)
       me.push(stdout)
+      if (stderr) me.push(stderr)
       me.state = me.end
       me.push(msg('end'))
       me.reader = false
@@ -133,9 +135,22 @@ var pushup = require('pushup')
   , gitstat = require('gitstat')
 
 function push (dir) {
-  process.chdir(dir)
+  function types () {
+    return ['.html', '.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
+  }
+  function ttl () {
+    var ages = Object.create(null)
+      , hour = 3600
+    types().forEach(function (type) {
+      ages[type] = 24 * hour * 30
+    })
+    ;['.xml', 'tweet.html', 'likes.html'].forEach(function (type) {
+      ages[type] = hour
+    })
+    return ages
+  }
   return gitstat(dir, 'AM')
-    .pipe(pushup())
+    .pipe(pushup({ gzip:true, ttl:ttl(), root:opts().target }))
 }
 
 Publisher.prototype.pushup = function (size) {
