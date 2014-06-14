@@ -3,12 +3,22 @@
 
 module.exports.start = start
 
+var Reader = require('fstream').Reader
+  , assert = require('assert')
+  , blake = require('blake')
+  , child_process = require('child_process')
+  , cop = require('cop')
+  , copy = require('blake/lib/copy')
+  , gitstat = require('gitstat')
+  , path = require('path')
+  , pushup = require('pushup')
+  , stream = require('stream')
+  , util = require('util')
+  ;
+
 function msg (str) {
   return 'trb ' + str + '\n'
 }
-
-var util = require('util')
-  , stream = require('stream')
 
 // Pull latest, generate all, and upload to S3.
 
@@ -25,13 +35,10 @@ Publisher.prototype._read = function (size) {
   this.state(size)
 }
 
-var assert = require('assert')
-
 function ok (er) {
   assert(!er, er ? er.message : undefined)
 }
 
-var child_process = require('child_process')
 
 function psopts (cwd) {
   return {
@@ -44,7 +51,7 @@ Publisher.prototype.pull = function (size) {
   var me = this
     , cmd = 'git pull'
     , o = psopts(this.source)
-
+    ;
   child_process.exec(cmd, o, function (er, stdout, stderr) {
     ok(er)
     me.state = me.copyResources
@@ -67,9 +74,6 @@ function read (me, reader, next, msg, size) {
   return reader
 }
 
-var copy = require('blake/lib/copy')
-  , path = require('path')
-
 function copyResources (source, target) {
   return copy(path.join(source, 'resources'), target)
 }
@@ -82,10 +86,6 @@ Publisher.prototype.copyResources = function (size) {
   }
   this.reader = reader
 }
-
-var blake = require('blake')
-  , Reader = require('fstream').Reader
-  , cop = require('cop')
 
 function generate (source, target, files) {
   files = files || new Reader({ path:path.join(source, 'data') })
@@ -119,6 +119,7 @@ Publisher.prototype.commit = function (size) {
     var cmd = 'git commit -a -m "trouble ahoy!"'
       , o = psopts(this.target)
       , me = this
+      ;
     child_process.exec(cmd, o, function (er, stdout, stderr) {
       if (er) me.push(er.message)
       me.push(stdout)
@@ -131,24 +132,28 @@ Publisher.prototype.commit = function (size) {
   }
 }
 
-var pushup = require('pushup')
-  , gitstat = require('gitstat')
+function hourly () {
+  return ['.xml', 'tweet.html', 'likes.html']
+}
+
+function monthly () {
+  return ['.html', '.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
+}
+
+function ttl () {
+  var ages = Object.create(null)
+    , hour = 3600
+    ;
+  monthly().forEach(function (type) {
+    ages[type] = 24 * hour * 30
+  })
+  hourly().forEach(function (type) {
+    ages[type] = hour
+  })
+  return ages
+}
 
 function push (dir) {
-  function types () {
-    return ['.html', '.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
-  }
-  function ttl () {
-    var ages = Object.create(null)
-      , hour = 3600
-    types().forEach(function (type) {
-      ages[type] = 24 * hour * 30
-    })
-    ;['.xml', 'tweet.html', 'likes.html'].forEach(function (type) {
-      ages[type] = hour
-    })
-    return ages
-  }
   return gitstat(dir, 'AM')
     .pipe(pushup({ gzip:true, ttl:ttl(), root:opts().target }))
 }
@@ -159,7 +164,7 @@ Publisher.prototype.pushup = function (size) {
     var cmd = 'git add --all'
       , o = psopts(this.target)
       , me = this
-
+      ;
     child_process.exec(cmd, o, function (er, stdout, stderr) {
       ok(er)
       var reader = push(me.target)
@@ -230,6 +235,7 @@ function router () {
   _router.addRoute('/update', update)
   _router.addRoute('/publish', publish)
   _router.addRoute('/*', notfound)
+  _router.addRoute('/', notfound)
   return _router
 }
 
@@ -238,6 +244,7 @@ function start (port) {
   var http = require('http')
     , url = require('url')
     , r = router()
+    ;
   http.createServer(function (req, res) {
     r.match(url.parse(req.url).pathname).fn(req, res)
   }).listen(port)

@@ -1,6 +1,6 @@
 {
   "name": "troubled-www",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "generate and publish http://troubled.pro",
   "main": "index.js",
   "scripts": {
