@@ -3,16 +3,19 @@
 
 module.exports.start = start
 
-var Reader = require('fstream').Reader
-  , assert = require('assert')
+var assert = require('assert')
   , blake = require('blake')
   , child_process = require('child_process')
   , cop = require('cop')
   , copy = require('blake/lib/copy')
+  , fstream = require('fstream')
   , gitstat = require('gitstat')
+  , http = require('http')
   , path = require('path')
   , pushup = require('pushup')
+  , routes = require('routes')
   , stream = require('stream')
+  , url = require('url')
   , util = require('util')
   ;
 
@@ -21,7 +24,6 @@ function msg (str) {
 }
 
 // Pull latest, generate all, and upload to S3.
-
 function Publisher (opts) {
   if (!(this instanceof Publisher)) return new Publisher(opts)
   stream.Readable.call(this)
@@ -38,7 +40,6 @@ Publisher.prototype._read = function (size) {
 function ok (er) {
   assert(!er, er ? er.message : undefined)
 }
-
 
 function psopts (cwd) {
   return {
@@ -88,7 +89,7 @@ Publisher.prototype.copyResources = function (size) {
 }
 
 function generate (source, target, files) {
-  files = files || new Reader({ path:path.join(source, 'data') })
+  files = files || new fstream.Reader({ path:path.join(source, 'data') })
     .pipe(cop('path'))
 
   return files
@@ -208,14 +209,17 @@ Updater.prototype.commit = Publisher.prototype.commit
 Updater.prototype.pushup = Publisher.prototype.pushup
 Updater.prototype.end = Publisher.prototype.end
 
-
 // HTTP API
-// GET /publish
-// GET /update
+// - GET /publish Generate and publish site
+// - GET /update Update tweet and likes, and publish site
 
 var _opts = require('./conf')
 function opts () {
   return _opts
+}
+
+function notfound (req, res) {
+  res.end('not found\n')
 }
 
 function publish (req, res) {
@@ -226,11 +230,7 @@ function update (req, res) {
   Updater(opts()).pipe(res)
 }
 
-function notfound (req, res) {
-  res.end('not found\n')
-}
-
-var _router = require('routes').Router()
+var _router = routes.Router()
 function router () {
   _router.addRoute('/update', update)
   _router.addRoute('/publish', publish)
@@ -241,11 +241,7 @@ function router () {
 
 function start (port) {
   port = port || opts().port
-  var http = require('http')
-    , url = require('url')
-    , r = router()
-    ;
   http.createServer(function (req, res) {
-    r.match(url.parse(req.url).pathname).fn(req, res)
+    router().match(url.parse(req.url).pathname).fn(req, res)
   }).listen(port)
 }
