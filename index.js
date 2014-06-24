@@ -66,6 +66,10 @@ function read (me, reader, next, msg, size) {
     var chunk = reader.read(size)
     if (chunk !== null) assert(me.push(chunk))
   })
+  reader.on('error', function (er) {
+    console.error(er)
+    me.end()
+  })
   reader.once('end', function () {
     reader.removeAllListeners()
     me.reader = null
@@ -137,8 +141,12 @@ function hourly () {
   return ['.xml', 'tweet.html', 'likes.html']
 }
 
+function daily () {
+  return ['.html']
+}
+
 function monthly () {
-  return ['.html', '.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
+  return ['.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
 }
 
 function ttl () {
@@ -147,6 +155,9 @@ function ttl () {
     ;
   monthly().forEach(function (type) {
     ages[type] = 24 * hour * 30
+  })
+  daily().forEach(function (type) {
+    ages[type] = 24 * hour
   })
   hourly().forEach(function (type) {
     ages[type] = hour
