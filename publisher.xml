@@ -30,10 +30,11 @@
         <envvar name="HOME" value="/home/node" />
         <envvar name="PATH" value="/opt/local/bin" />
         <envvar name="NODE_ENV" value="production" />
-        <envvar name="PORT" value="" />
-        <envvar name="SECRET" value="" />
+
         <envvar name="TROUBLED_SOURCE" value="" />
         <envvar name="TROUBLED_TARGET" value="" />
+        <envvar name="TROUBLED_PORT" value="" />
+        <envvar name="TROUBLED_SECRET" value="" />
 
         <envvar name="AWS_ACCESS_KEY_ID" value="" />
         <envvar name="AWS_SECRET_ACCESS_KEY" value="" />

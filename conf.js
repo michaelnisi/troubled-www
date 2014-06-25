@@ -23,8 +23,10 @@ exports.target = target
 exports.tweet = path.resolve(source, 'data', 'tweet.json')
 exports.likes = path.resolve(source, 'data', 'likes.json')
 
-exports.port = env.PORT || env.NODE_ENV === 'production' ? 80 : 8080
-exports.secret = env.SECRET
+exports.port = env.TROUBLED_PORT
+  || env.NODE_ENV === 'production' ? 80 : 8080
+
+exports.secret = env.TROUBLED_SECRET
 
 if (module === require.main) {
   console.log(exports)
