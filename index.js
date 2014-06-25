@@ -237,9 +237,8 @@ function notfound (req, res) {
 }
 
 function match (sig, hmac) {
-  var str = new string_decoder.StringDecoder().write(hmac.digest())
-  console.log('sig: %s, hmac: %s', sig, str)
-  return ('sha=' + str) === sig
+  var str = new string_decoder.StringDecoder().write(hmac.digest('hex'))
+  return ('sha1=' + str) === sig
 }
 
 function verify (req, cb) {
