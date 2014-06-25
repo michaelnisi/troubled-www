@@ -8,6 +8,7 @@ var assert = require('assert')
   , child_process = require('child_process')
   , cop = require('cop')
   , copy = require('blake/lib/copy')
+  , crypto = require('crypto')
   , fstream = require('fstream')
   , gitstat = require('gitstat')
   , http = require('http')
@@ -15,6 +16,7 @@ var assert = require('assert')
   , pushup = require('pushup')
   , routes = require('routes')
   , stream = require('stream')
+  , string_decoder = require('string_decoder')
   , url = require('url')
   , util = require('util')
   ;
@@ -231,14 +233,44 @@ function opts () {
 
 function notfound (req, res) {
   res.end('not found\n')
+  console.log('*** suspect request: %f', req)
+}
+
+function match (sig, hmac) {
+  var str = new string_decoder.StringDecoder().write(hmac.digest())
+  console.log('sig: %s, hmac: %s', sig, str)
+  return ('sha=' + str) === sig
+}
+
+function verify (req, cb) {
+  if (!req.secret) return cb(null, true)
+  var sig = req.headers['x-hub-signature']
+  if (!sig) return cb(new Error('no x-hub-signature'))
+  var hmac = crypto.createHmac('sha1', req.secret)
+  hmac.once('finish', function () { cb(null, match(sig, hmac)) })
+  hmac.once('error', cb)
+  req.once('error', cb)
+  req.pipe(hmac)
 }
 
 function publish (req, res) {
-  Publisher(opts()).pipe(res)
+  verify(req, function (er, yes) {
+    if (!er && yes) {
+      Publisher(opts()).pipe(res)
+    } else {
+      notfound(req, res)
+    }
+  })
 }
 
 function update (req, res) {
-  Updater(opts()).pipe(res)
+  verify(req, function (er, yes) {
+    if (!er && yes) {
+      Updater(opts()).pipe(res)
+    } else {
+      notfound(req, res)
+    }
+  })
 }
 
 var _router = routes.Router()
@@ -250,9 +282,11 @@ function router () {
   return _router
 }
 
-function start (port) {
+function start (port, secret) {
   port = port || opts().port
+  secret = secret || opts().secret
   http.createServer(function (req, res) {
+    req.secret = secret
     router().match(url.parse(req.url).pathname).fn(req, res)
   }).listen(port)
 }

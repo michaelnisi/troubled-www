@@ -30,19 +30,21 @@
         <envvar name="HOME" value="/home/node" />
         <envvar name="PATH" value="/opt/local/bin" />
         <envvar name="NODE_ENV" value="production" />
+        <envvar name="PORT" value="" />
+        <envvar name="SECRET" value="" />
+        <envvar name="TROUBLED_SOURCE" value="" />
+        <envvar name="TROUBLED_TARGET" value="" />
 
         <envvar name="AWS_ACCESS_KEY_ID" value="" />
         <envvar name="AWS_SECRET_ACCESS_KEY" value="" />
         <envvar name="S3_BUCKET" value="" />
         <envvar name="S3_REGION" value="" />
+        <envvar name="S3_ENDPOINT" value="" />
 
         <envvar name="CONSUMER_KEY" value="" />
         <envvar name="CONSUMER_SECRET" value="" />
         <envvar name="ACCESS_TOKEN" value="" />
         <envvar name="ACCESS_TOKEN_SECRET" value="" />
-
-        <envvar name="TROUBLED_SOURCE" value="/home/node/troubled" />
-        <envvar name="TROUBLED_TARGET" value="/home/node/troubled-site" />
       </method_environment>
     </method_context>
 
