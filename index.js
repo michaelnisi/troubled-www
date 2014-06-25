@@ -226,14 +226,13 @@ Updater.prototype.end = Publisher.prototype.end
 // - GET /publish Generate and publish site
 // - GET /update Update tweet and likes, and publish site
 
-var _opts = require('./conf')
 function opts () {
-  return _opts
+  return require('./conf')
 }
 
 function notfound (req, res) {
   res.end('not found\n')
-  console.log('*** suspect request: %f', req)
+  console.log('*** suspect request: %f', req.headers)
 }
 
 function match (sig, hmac) {
