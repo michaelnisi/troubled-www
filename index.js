@@ -232,7 +232,7 @@ function opts () {
 
 function notfound (req, res) {
   res.end('not found\n')
-  console.log('*** suspect request: %f', req.headers)
+  console.log('\n*** suspect request:\n', req.headers)
 }
 
 function match (sig, hmac) {
