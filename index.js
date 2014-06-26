@@ -254,10 +254,10 @@ function verify (req, cb) {
 }
 
 function publish (req, res) {
-  req.log.info('publish')
   verify(req, function (er, yes) {
     if (!er && yes) {
       Publisher(opts()).pipe(res)
+      req.log.info('publish')
     } else {
       notfound(req, res)
     }
@@ -265,14 +265,8 @@ function publish (req, res) {
 }
 
 function update (req, res) {
+  Updater(opts()).pipe(res)
   req.log.info('update')
-  verify(req, function (er, yes) {
-    if (!er && yes) {
-      Updater(opts()).pipe(res)
-    } else {
-      notfound(req, res)
-    }
-  })
 }
 
 var _router
@@ -295,7 +289,6 @@ function decorate (req) {
 
 function start () {
   http.createServer(function (req, res) {
-    router().match(url.parse(req.url).pathname)
-      .fn(decorate(req), res)
+    router().match(url.parse(req.url).pathname).fn(decorate(req), res)
   }).listen(opts().port)
 }
