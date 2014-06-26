@@ -1,6 +1,6 @@
 {
   "name": "troubled-www",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "generate and publish http://troubled.pro",
   "main": "index.js",
   "scripts": {
@@ -19,12 +19,13 @@
     "url": "http://michaelnisi.com"
   },
   "dependencies": {
-    "routes": "1.1.x",
-    "gitstat": "0.0.x",
-    "fstream": "0.1.x",
+    "blake": "0.9.x",
+    "bunyan": "0.23.x",
     "cop": "0.3.x",
+    "fstream": "0.1.x",
+    "gitstat": "0.0.x",
     "pushup": "0.6.x",
-    "blake": "0.9.x"
+    "routes": "1.1.x"
   },
   "engines": {
     "node": ">=0.10"

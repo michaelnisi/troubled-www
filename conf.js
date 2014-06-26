@@ -1,13 +1,16 @@
 
 // config - configure troubled-www
 
-var path = require('path')
+var assert = require('assert')
+  , bunyan = require('bunyan')
   , fs = require('fs')
-  , assert = require('assert')
+  , path = require('path')
+  ;
 
 var env = process.env
   , source = env.TROUBLED_SOURCE
   , target = env.TROUBLED_TARGET
+  ;
 
 try {
   [source, target].forEach(function (dir) {
@@ -23,10 +26,21 @@ exports.target = target
 exports.tweet = path.resolve(source, 'data', 'tweet.json')
 exports.likes = path.resolve(source, 'data', 'likes.json')
 
-exports.port = env.TROUBLED_PORT
-  || (env.NODE_ENV === 'production' ? 80 : 8080)
+function p () {
+  return env.NODE_ENV === 'production'
+}
 
+exports.port = env.TROUBLED_PORT || (p() ? 80 : 8080)
 exports.secret = env.TROUBLED_SECRET
+
+function log() {
+  return bunyan.createLogger({
+    name: 'publisher'
+  , level: 'info'
+  })
+}
+
+exports.log = log()
 
 if (module === require.main) {
   console.log(exports)

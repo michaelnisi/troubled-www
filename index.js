@@ -69,7 +69,7 @@ function read (me, reader, next, msg, size) {
     if (chunk !== null) assert(me.push(chunk))
   })
   reader.on('error', function (er) {
-    console.error(er)
+    me.log.error(er)
     me.end()
   })
   reader.once('end', function () {
@@ -232,7 +232,7 @@ function opts () {
 
 function notfound (req, res) {
   res.end('not found\n')
-  console.log('\n*** suspect request:\n', req.headers)
+  req.log.warn('fishy request:', req.headers)
 }
 
 function match (sig, hmac) {
@@ -254,6 +254,7 @@ function verify (req, cb) {
 }
 
 function publish (req, res) {
+  req.log.info('publish')
   verify(req, function (er, yes) {
     if (!er && yes) {
       Publisher(opts()).pipe(res)
@@ -264,6 +265,7 @@ function publish (req, res) {
 }
 
 function update (req, res) {
+  req.log.info('update')
   verify(req, function (er, yes) {
     if (!er && yes) {
       Updater(opts()).pipe(res)
@@ -273,20 +275,27 @@ function update (req, res) {
   })
 }
 
-var _router = routes.Router()
+var _router
 function router () {
-  _router.addRoute('/update', update)
-  _router.addRoute('/publish', publish)
-  _router.addRoute('/*', notfound)
-  _router.addRoute('/', notfound)
+  if (!_router) {
+    _router = routes.Router()
+    _router.addRoute('/update', update)
+    _router.addRoute('/publish', publish)
+    _router.addRoute('/*', notfound)
+    _router.addRoute('/', notfound)
+  }
   return _router
 }
 
-function start (port, secret) {
-  port = port || opts().port
-  secret = secret || opts().secret
+function decorate (req) {
+  req.secret = opts().secret
+  req.log = opts().log
+  return req
+}
+
+function start () {
   http.createServer(function (req, res) {
-    req.secret = secret
-    router().match(url.parse(req.url).pathname).fn(req, res)
-  }).listen(port)
+    router().match(url.parse(req.url).pathname)
+      .fn(decorate(req), res)
+  }).listen(opts().port)
 }
