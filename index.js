@@ -9,6 +9,7 @@ var assert = require('assert')
   , cop = require('cop')
   , copy = require('blake/lib/copy')
   , crypto = require('crypto')
+  , deed = require('deed')
   , fstream = require('fstream')
   , gitstat = require('gitstat')
   , http = require('http')
@@ -240,22 +241,9 @@ function match (sig, hmac) {
   return ('sha1=' + str) === sig
 }
 
-function verify (req, cb) {
-  var secret = req.secret
-  delete req.secret
-  if (!secret) return cb(null, true)
-  var sig = req.headers['x-hub-signature']
-  if (!sig) return cb(new Error('no x-hub-signature'))
-  var hmac = crypto.createHmac('sha1', secret)
-  hmac.once('finish', function () { cb(null, match(sig, hmac)) })
-  hmac.once('error', cb)
-  req.once('error', cb)
-  req.pipe(hmac)
-}
-
 function publish (req, res) {
-  verify(req, function (er, yes) {
-    if (!er && yes) {
+  deed(req.secret, req, function (er, verified) {
+    if (!er && verified) {
       Publisher(opts()).pipe(res)
       req.log.info('publish')
     } else {
