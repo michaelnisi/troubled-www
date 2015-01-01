@@ -140,37 +140,27 @@ Publisher.prototype.commit = function (size) {
   }
 }
 
-function hourly () {
-  return ['.xml', 'tweet.html', 'likes.html']
-}
+var HOUR = 3600
 
-function daily () {
-  return ['.html']
-}
-
-function monthly () {
-  return ['.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
-}
+var MONTHLY = ['.js', '.jpg', '.png', '.svg', '.txt', '.ico']
+var DAILY = ['.html', '.css']
+var HOURLY = ['.xml', 'tweet.html', 'likes.html']
 
 function ttl () {
-  var ages = Object.create(null)
-    , hour = 3600
-    ;
-  monthly().forEach(function (type) {
-    ages[type] = 24 * hour * 30
-  })
-  daily().forEach(function (type) {
-    ages[type] = 24 * hour
-  })
-  hourly().forEach(function (type) {
-    ages[type] = hour
-  })
-  return ages
+  var conf = {}
+  MONTHLY.forEach(function (type) { conf[type] = 24 * HOUR * 30 })
+  DAILY.forEach(function (type) { conf[type] = 24 * HOUR })
+  HOURLY.forEach(function (type) { conf[type] = HOUR })
+  return conf
+}
+
+function gzip () {
+  return { '.xml': false }
 }
 
 function push (dir) {
   return gitstat(dir, 'AM')
-    .pipe(pushup({ gzip:true, ttl:ttl(), root:opts().target }))
+    .pipe(pushup({ gzip: gzip(), ttl: ttl(), root: opts().target }))
 }
 
 Publisher.prototype.pushup = function (size) {
@@ -243,7 +233,7 @@ function match (sig, hmac) {
 
 function publish (req, res) {
   deed(req.secret, req, function (er, verified) {
-    if (!er && verified) {
+    if (!er && verified || process.env.NODE_ENV !== 'production') {
       Publisher(opts()).pipe(res)
       req.log.info('publish')
     } else {

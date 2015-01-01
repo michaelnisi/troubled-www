@@ -13,22 +13,24 @@
     "url": "git://github.com/michaelnisi/troubled-www.git"
   },
   "license": "MIT",
-  "author": {
-    "name": "Michael Nisi",
-    "email": "michael.nisi@gmail.com",
-    "url": "http://michaelnisi.com"
-  },
+  "author": "Michael Nisi <michael.nisi@gmail.com> (http://michaelnisi.com)",
   "dependencies": {
-    "blake": "0.9.x",
-    "bunyan": "0.23.x",
-    "cop": "0.3.x",
-    "deed": "0.0.x",
-    "fstream": "0.1.x",
-    "gitstat": "0.0.x",
-    "pushup": "0.6.x",
-    "routes": "1.1.x"
+    "blake": "^0.9.3",
+    "bunyan": "^1.2.3",
+    "cop": "^0.3.6",
+    "deed": "0.0.7",
+    "fstream": "^1.0.3",
+    "gitstat": "0.0.5",
+    "pushup": "^1.0.0",
+    "routes": "^2.0.0"
   },
   "engines": {
     "node": ">=0.10"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/michaelnisi/troubled-www/issues"
+  },
+  "homepage": "https://github.com/michaelnisi/troubled-www",
+  "devDependencies": {},
+  "keywords": []
 }
