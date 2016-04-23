@@ -1,4 +1,7 @@
-npm-debug.log
-node_modules
+*.swo
+*.swp
 .env
 .pid
+build
+node_modules
+npm-debug.log

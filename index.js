@@ -1,272 +1,335 @@
-
-// troubled - publish http://troubled.pro
+//
+// troubled-www - publish and update site
+//
 
 module.exports.start = start
 
 var assert = require('assert')
-  , blake = require('blake')
-  , child_process = require('child_process')
-  , cop = require('cop')
-  , copy = require('blake/lib/copy')
-  , crypto = require('crypto')
-  , deed = require('deed')
-  , fstream = require('fstream')
-  , gitstat = require('gitstat')
-  , http = require('http')
-  , path = require('path')
-  , pushup = require('pushup')
-  , routes = require('routes')
-  , stream = require('stream')
-  , string_decoder = require('string_decoder')
-  , url = require('url')
-  , util = require('util')
-  ;
+var backoff = require('backoff')
+var blake = require('blake')
+var child_process = require('child_process')
+var cop = require('cop')
+var deed = require('deed')
+var fstream = require('fstream')
+var gitstat = require('gitstat')
+var path = require('path')
+var pushup = require('pushup')
+var restify = require('restify')
+var stream = require('readable-stream')
 
-function msg (str) {
-  return 'trb ' + str + '\n'
-}
+var conf = require('./conf')
 
-// Pull latest, generate all, and upload to S3.
-function Publisher (opts) {
-  if (!(this instanceof Publisher)) return new Publisher(opts)
-  stream.Readable.call(this)
-  util._extend(this, opts)
-  this.state = this.pull
-  this.push(msg('pull'))
-}
-util.inherits(Publisher, stream.Readable)
+function verify (req, res, next) {
+  req.log.info('verify')
 
-Publisher.prototype._read = function (size) {
-  this.state(size)
-}
+  var secret = req.state.secret
 
-function ok (er) {
-  assert(!er, er ? er.message : undefined)
-}
-
-function psopts (cwd) {
-  return {
-    cwd:cwd
-  , env:process.env
-  }
-}
-
-Publisher.prototype.pull = function (size) {
-  var me = this
-    , cmd = 'git pull'
-    , o = psopts(this.source)
-    ;
-  child_process.exec(cmd, o, function (er, stdout, stderr) {
-    ok(er)
-    me.state = me.copyResources
-    me.push(stdout)
-    me.push(msg('copy resources'))
-  })
-}
-
-function read (me, reader, next, msg, size) {
-  reader.on('readable', function () {
-    var chunk = reader.read(size)
-    if (chunk !== null) assert(me.push(chunk))
-  })
-  reader.on('error', function (er) {
-    me.log.error(er)
-    me.end()
-  })
-  reader.once('end', function () {
-    reader.removeAllListeners()
-    me.reader = null
-    me.state = next
-    me.push(msg)
-  })
-  return reader
-}
-
-function copyResources (source, target) {
-  return copy(path.join(source, 'resources'), target)
-}
-
-Publisher.prototype.copyResources = function (size) {
-  var reader = this.reader
-  if (!reader) {
-    reader = copyResources(this.source, this.target)
-    read(this, reader, this.generate, msg('generate'), size)
-  }
-  this.reader = reader
-}
-
-function generate (source, target, files) {
-  files = files || new fstream.Reader({ path:path.join(source, 'data') })
-    .pipe(cop('path'))
-
-  return files
-    .pipe(blake(source, target))
-    .pipe(cop(function (s) { return s += '\n' }))
-}
-
-function files (paths) {
-  var files = stream.Readable()
-  files._read = function () {
-    files.push(paths.shift())
-  }
-  return files
-}
-
-Publisher.prototype.generate = function (size) {
-  var reader = this.reader
-  if (!reader) {
-    reader = generate(this.source, this.target)
-    read(this, reader, this.pushup, msg('pushup'), size)
-  }
-  this.reader = reader
-}
-
-Publisher.prototype.commit = function (size) {
-  var reader = this.reader
-  if (!reader) {
-    var cmd = 'git commit -a -m "trouble ahoy!"'
-      , o = psopts(this.target)
-      , me = this
-      ;
-    child_process.exec(cmd, o, function (er, stdout, stderr) {
-      if (er) me.push(er.message)
-      me.push(stdout)
-      if (stderr) me.push(stderr)
-      me.state = me.end
-      me.push(msg('end'))
-      me.reader = false
-    })
-    this.reader = true
-  }
-}
-
-var HOUR = 3600
-
-var MONTHLY = ['.js', '.jpg', '.png', '.svg', '.txt', '.ico']
-var DAILY = ['.html', '.css']
-var HOURLY = ['.xml', 'tweet.html', 'likes.html']
-
-function ttl () {
-  var conf = {}
-  MONTHLY.forEach(function (type) { conf[type] = 24 * HOUR * 30 })
-  DAILY.forEach(function (type) { conf[type] = 24 * HOUR })
-  HOURLY.forEach(function (type) { conf[type] = HOUR })
-  return conf
-}
-
-function gzip () {
-  return { '.xml': false }
-}
-
-function push (dir) {
-  return gitstat(dir, 'AM')
-    .pipe(pushup({ gzip: gzip(), ttl: ttl(), root: opts().target }))
-}
-
-Publisher.prototype.pushup = function (size) {
-  var reader = this.reader
-  if (!reader) {
-    var cmd = 'git add --all'
-      , o = psopts(this.target)
-      , me = this
-      ;
-    child_process.exec(cmd, o, function (er, stdout, stderr) {
-      ok(er)
-      var reader = push(me.target)
-      read(me, reader, me.commit, msg('commit'), size)
-      me.reader = reader
-    })
-    this.reader = true
-  }
-}
-
-Publisher.prototype.end = function (size) {
-  this.push('ok\n')
-  this.push(null)
-  this.state = null // I'm done
-}
-
-// Update tweet and likes, and upload to S3.
-
-function Updater (opts) {
-  if (!(this instanceof Updater)) return new Updater(opts)
-  stream.Readable.call(this)
-  util._extend(this, opts)
-  this.state = this.update
-  this.push(msg('update'))
-}
-util.inherits(Updater, stream.Readable)
-
-
-Updater.prototype.update = function (size) {
-  var reader = this.reader
-  if (!reader) {
-    var paths = [this.tweet, this.likes]
-    reader = generate(this.source, this.target, files(paths))
-    read(this, reader, this.pushup, msg('pushup'), size)
-  }
-  this.reader = reader
-}
-
-Updater.prototype._read = Publisher.prototype._read
-Updater.prototype.commit = Publisher.prototype.commit
-Updater.prototype.pushup = Publisher.prototype.pushup
-Updater.prototype.end = Publisher.prototype.end
-
-// HTTP API
-// - GET /publish Generate and publish site
-// - GET /update Update tweet and likes, and publish site
-
-function opts () {
-  return require('./conf')
-}
-
-function notfound (req, res) {
-  res.end('not found\n')
-  req.log.warn('fishy request:', req.headers)
-}
-
-function match (sig, hmac) {
-  var str = new string_decoder.StringDecoder().write(hmac.digest('hex'))
-  return ('sha1=' + str) === sig
-}
-
-function publish (req, res) {
-  deed(req.secret, req, function (er, verified) {
-    if (!er && verified || process.env.NODE_ENV !== 'production') {
-      Publisher(opts()).pipe(res)
-      req.log.info('publish')
+  deed(secret, req, function deedHandler (error) {
+    if (error) {
+      var er = new restify.ForbiddenError(error.message)
+      req.state.busy = false
+      req.log.warn(er, 'not verified')
+      next(er)
     } else {
-      notfound(req, res)
+      res.statusCode = 202
+      res.send({ ok: true })
+      next()
     }
   })
 }
 
-function update (req, res) {
-  Updater(opts()).pipe(res)
-  req.log.info('update')
+function done (req, res, next) {
+  req.log.info('done')
+  req.state.busy = false
+  if (typeof next === 'function') next()
 }
 
-var _router
-function router () {
-  if (!_router) {
-    _router = routes.Router()
-    _router.addRoute('/update', update)
-    _router.addRoute('/publish', publish)
-    _router.addRoute('/*', notfound)
-    _router.addRoute('/', notfound)
+// Both routes of this service return early with a '202 Accepted', thus, if an
+// error occurs, the next handler is not applied, because we, of course, must
+// not send headers twice, it would lead to an unhandled exception crashing
+// our service.
+function abort (req, res, er) {
+  if (er instanceof Error) {
+    req.log.error(er, req.route.name)
+    done(req, res, null)
+    return true
   }
-  return _router
+  return false
 }
 
-function decorate (req) {
-  req.secret = opts().secret
-  req.log = opts().log
-  return req
+function gitError (er, stderr, req) {
+  if (er instanceof Error) {
+    req.log.warn(er, req.path())
+    // Not sure what qualifies as proper error here.
+    if (er.killed) return er
+  }
+  return stderr.split(' ')[0] === 'fatal:' ? new Error(stderr) : null
+}
+
+function pull (req, res, next) {
+  var cmd = 'git pull'
+  var source = req.state.source
+  var conf = { cwd: source, env: process.env }
+
+  req.log.info(conf.cwd, cmd)
+
+  child_process.exec(cmd, conf, function pullHandler (er, stdout, stderr) {
+    abort(req, res, gitError(er, stderr, req)) || next()
+  })
+}
+
+function copyResources (req, res, next) {
+  req.log.info('copy resources')
+
+  var source = req.state.source
+  var target = req.state.target
+  var s = blake.copy(path.join(source, 'resources'), target)
+
+  function onend (er) {
+    s.removeAllListeners()
+    abort(req, res, er) || next()
+  }
+  s.on('end', onend)
+  s.on('error', onend)
+
+  s.resume()
+}
+
+function generate (req, res, next) {
+  var source = req.state.source
+  var target = req.state.target
+  var s = blake(source, target)
+
+  var files = req.state.files || new fstream.Reader(
+    { path: path.join(source, 'data') }
+  ).pipe(cop('path'))
+
+  function handler (er) {
+    files.unpipe()
+    files.removeAllListeners()
+    s.removeAllListeners()
+    abort(req, res, er) || next()
+  }
+
+  s.on('end', handler)
+  s.on('error', handler)
+  s.on('readable', function read () {
+    var chunk
+    while ((chunk = s.read()) !== null) {
+      var base = path.parse(chunk).base
+      req.log.info(base, 'generate')
+    }
+  })
+
+  files.on('error', handler)
+  files.pipe(s)
+}
+
+function commit (req, res, next) {
+  var target = req.state.target
+  var conf = { cwd: target, env: process.env }
+  var cmd = 'git commit -a -m "Aye!"'
+
+  req.log.info(cmd)
+
+  child_process.exec(cmd, conf, function (er, stdout, stderr) {
+    abort(req, res, gitError(er, stderr, req)) || next()
+  })
+}
+
+function add (req, res, next) {
+  var target = req.state.target
+  var conf = { cwd: target, env: process.env }
+  var cmd = 'git add --all'
+
+  req.log.info(cmd)
+
+  child_process.exec(cmd, conf, function (er, stdout, stderr) {
+    abort(req, res, gitError(er, stderr, req)) || next()
+  })
+}
+
+function ttl () {
+  var l = ['.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
+  var m = ['.xml', '.html']
+  var s = ['tweet.html', 'likes.html']
+  var conf = Object.create(null)
+  var h = 3600
+  l.forEach(function (t) { conf[t] = h * 24 * 365 })
+  m.forEach(function (t) { conf[t] = h * 24 })
+  s.forEach(function (t) { conf[t] = h })
+  return conf
+}
+
+function bucket (req, res, next) {
+  var target = req.state.target
+
+  var s = pushup({ gzip: { '.xml': false }, ttl: ttl(), root: target })
+
+  s.on('readable', function read () {
+    var chunk
+    while ((chunk = s.read()) !== null) {
+      req.log.info('bucket %s', chunk)
+    }
+  })
+
+  var files = gitstat(target, 'AM')
+
+  // Making sure not to post more than necessary if we're on the update route.
+  var guard = cop(function map (file) {
+    if (req.route.path !== '/update') return file
+    if (file === 'tweet.html' || file === 'likes.html') return file
+    return null
+  })
+
+  function handler (er) {
+    files.unpipe()
+    files.removeAllListeners()
+    guard.unpipe()
+    guard.removeAllListeners()
+    s.removeAllListeners()
+    abort(req, res, er) || next()
+  }
+
+  s.once('end', handler)
+  s.once('error', handler)
+
+  files.once('error', handler)
+  files.pipe(guard)
+
+  guard.once('error', handler)
+  guard.pipe(s)
+}
+
+function readablePaths (paths) {
+  var s = stream.Readable()
+  s._read = function read () { s.push(paths.shift() || null) }
+  return s
+}
+
+function update (req, res, next) {
+  var source = req.state.source
+  var paths = [
+    path.resolve(source, 'data', 'tweet.json'),
+    path.resolve(source, 'data', 'likes.json')
+  ]
+  var files = readablePaths(paths)
+  req.state.files = files
+  next()
+}
+
+// HTTP Server
+
+function State (source, target, secret, files) {
+  this.source = source
+  this.target = target
+  this.secret = secret
+  this.files = files
 }
 
 function start () {
-  http.createServer(function (req, res) {
-    router().match(url.parse(req.url).pathname).fn(decorate(req), res)
-  }).listen(opts().port)
+  var server = restify.createServer({
+    log: conf.log
+  })
+
+  server.on('uncaughtException', function (req, res, route, e) {
+    req.log.error(e, 'uncaught exception')
+    throw e
+  })
+
+  server.on('NotFound', function (req, res, er) {
+    req.log.warn(er, 'not found')
+    res.send(er)
+  })
+
+  server.on('MethodNotAllowed', function (req, res, er) {
+    req.log.warn(er, 'method not allowed')
+    res.send(er)
+  })
+
+  var busy = false
+  var secret = conf.secret
+  var source = conf.source
+  var target = conf.target
+
+  server.pre(function (req, res, next) {
+    res.setHeader('Connection', 'close')
+    return next()
+  })
+
+  server.use(function decorate (req, res, next) {
+    req.log.info({ route: req.route }, 'incoming')
+
+    var state = new State(source, target, secret)
+    Object.defineProperty(state, 'busy', {
+      set: function (value) { busy = value },
+      get: function () { return busy }
+    })
+    req.state = state
+    res.setHeader('Location', 'http://troubled.pro/')
+
+    if (busy) {
+      var bo = backoff.fibonacci({
+        randomisationFactor: 0,
+        initialDelay: 300,
+        maxDelay: 3000
+      })
+      bo.failAfter(10)
+      bo.on('backoff', function (num, delay) {
+        req.log.warn({ attempt: num, delay: delay }, 'backing off')
+      })
+      bo.on('ready', function () {
+        if (busy) {
+          bo.backoff()
+        } else {
+          bo.removeAllListeners()
+          busy = true
+          next()
+        }
+      })
+      bo.on('fail', function () {
+        req.log.warn('backoff failed')
+        bo.removeAllListeners()
+        var er = new restify.ServiceUnavailableError('still busy')
+        next(er)
+      })
+      bo.backoff()
+    } else {
+      busy = true
+      next()
+    }
+  })
+
+  server.post('/publish',
+    verify,
+    pull,
+    copyResources,
+    generate,
+    add,
+    bucket,
+    commit,
+    done
+  )
+
+  // TODO: Protect this route
+  server.get('/update',
+    verify,
+    update,
+    generate,
+    add,
+    bucket,
+    commit,
+    done
+  )
+
+  var port = conf.port
+
+  server.listen(port, function (er) {
+    assert.ifError(er)
+    conf.log.info(
+      { port: port, source: source, target: target },
+      'listening'
+    )
+    conf = null
+  })
 }

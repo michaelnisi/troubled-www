@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<service_bundle type="manifest" name="troubled">
+  <service name="site/troubled" type="service" version="1">
+    <create_default_instance enabled="true"/>
+    <single_instance/>
+
+    <dependency
+      name="network"
+      grouping="require_all"
+      restart_on="error"
+      type="service">
+      <service_fmri value="svc:/milestone/network:default"/>
+    </dependency>
+
+    <dependency
+      name="filesystem"
+      grouping="require_all"
+      restart_on="error"
+      type="service">
+      <service_fmri value="svc:/system/filesystem/local"/>
+    </dependency>
+
+    <method_context
+      working_directory="@@SVC_ROOT@@">
+      <method_credential
+        user="root"
+        group="root"
+        privileges='basic,net_privaddr' />
+
+      <method_environment>
+        <envvar name="PATH" value="/opt/local/bin:@@SVC_ROOT@@" />
+
+        <envvar name="TROUBLED_SOURCE" value="@@TROUBLED_SOURCE@@" />
+        <envvar name="TROUBLED_TARGET" value="@@TROUBLED_TARGET@@" />
+        <envvar name="TROUBLED_PORT" value="@@TROUBLED_PORT@@" />
+        <envvar name="TROUBLED_SECRET" value="@@TROUBLED_SECRET@@" />
+
+        <envvar name="AWS_ACCESS_KEY_ID" value="@@AWS_ACCESS_KEY_ID@@" />
+        <envvar name="AWS_SECRET_ACCESS_KEY" value="@@AWS_SECRET_ACCESS_KEY@@" />
+        <envvar name="S3_BUCKET" value="@@S3_BUCKET@@" />
+        <envvar name="S3_REGION" value="@@S3_REGION@@" />
+        <envvar name="S3_ENDPOINT" value="@@S3_ENDPOINT@@" />
+
+        <envvar name="CONSUMER_KEY" value="@@CONSUMER_KEY@@" />
+        <envvar name="CONSUMER_SECRET" value="@@CONSUMER_SECRET@@" />
+        <envvar name="ACCESS_TOKEN" value="@@ACCESS_TOKEN@@" />
+        <envvar name="ACCESS_TOKEN_SECRET" value="@@ACCESS_TOKEN_SECRET@@" />
+      </method_environment>
+    </method_context>
+
+    <exec_method
+      type="method"
+      name="start"
+      exec="/opt/local/bin/node --abort-on-uncaught-exception --max_old_space_size=64 start.js &amp;"
+      timeout_seconds="10"/>
+
+    <exec_method
+      type="method"
+      name="stop"
+      exec=":kill"
+      timeout_seconds="30"/>
+
+    <template>
+      <common_name>
+        <loctext xml:lang="C">Troubled Publishing HTTP Service</loctext>
+      </common_name>
+    </template>
+  </service>
+</service_bundle>

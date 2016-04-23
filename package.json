@@ -1,12 +1,12 @@
 {
   "name": "troubled-www",
-  "version": "0.8.6",
-  "description": "generate and publish http://troubled.pro",
+  "version": "1.0.0",
+  "description": "HTTP service to generate, update, and publish my personal site.",
   "main": "index.js",
   "scripts": {
     "start": "node start.js > /dev/null & echo $! > .pid",
-    "stop": "kill `< .pid`",
-    "show-conf": "node config.js"
+    "stop": "kill $(< .pid)",
+    "test": "standard"
   },
   "repository": {
     "type": "git",
@@ -15,14 +15,19 @@
   "license": "MIT",
   "author": "Michael Nisi <michael.nisi@gmail.com> (http://michaelnisi.com)",
   "dependencies": {
-    "blake": "^0.9.3",
-    "bunyan": "^1.2.3",
-    "cop": "^0.3.6",
-    "deed": "0.0.7",
-    "fstream": "^1.0.3",
-    "gitstat": "0.0.5",
-    "pushup": "^1.0.0",
-    "routes": "^2.0.0"
+    "backoff": "^2.5.0",
+    "blake": "^1.0.1",
+    "bunyan": "^1.8.0",
+    "cop": "^1.0.0",
+    "deed": "^1.0.0",
+    "fstream": "^1.0.8",
+    "gitstat": "^1.0.0",
+    "pushup": "^1.0.2",
+    "readable-stream": "^2.0.6",
+    "restify": "^4.0.4"
+  },
+  "devDependencies": {
+    "standard": "^6.0.8"
   },
   "engines": {
     "node": ">=0.10"
@@ -30,7 +35,5 @@
   "bugs": {
     "url": "https://github.com/michaelnisi/troubled-www/issues"
   },
-  "homepage": "https://github.com/michaelnisi/troubled-www",
-  "devDependencies": {},
-  "keywords": []
+  "homepage": "https://github.com/michaelnisi/troubled-www"
 }
