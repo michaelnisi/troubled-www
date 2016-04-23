@@ -56,7 +56,7 @@ Date: Thu, 14 Apr 2016 06:59:55 GMT
 
 ## Installing the Service
 
-I run this on a minimal [Triton Standard Instance](https://www.joyent.com/blog/understanding-triton-containers) for about three dollars a month.
+Memory might get tight—Node processes are colossal—but lets install on the smallest [Triton Standard Instance](https://www.joyent.com/public-cloud/pricing).
 
 This is a Node program, so:
 
