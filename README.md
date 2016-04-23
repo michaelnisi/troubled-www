@@ -90,7 +90,7 @@ $ make
 
 We need a [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security) certificate for stud.
 
-The Joyent pkgsrc [repo](http://pkgsrc.joyent.com/) offers  a [Let's Encrypt]](https://letsencrypt.org/) client to automatically receive and instal X.509 certificates.
+The Joyent pkgsrc [repo](http://pkgsrc.joyent.com/) offers  a [Let's Encrypt](https://letsencrypt.org/) client to automatically receive and instal X.509 certificates.
 
 ```
 $ pkgin se letsencrypt
