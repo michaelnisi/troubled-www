@@ -150,14 +150,16 @@ function add (req, res, next) {
 }
 
 function ttl () {
-  var l = ['.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
-  var m = ['.xml', '.html']
+  var l = ['.js', '.jpg', '.png', '.svg', '.txt', '.ico']
+  var m = ['.xml', '.html', '.css']
   var s = ['tweet.html', 'likes.html']
   var conf = Object.create(null)
   var h = 3600
-  l.forEach(function (t) { conf[t] = h * 24 * 365 })
-  m.forEach(function (t) { conf[t] = h * 24 })
-  s.forEach(function (t) { conf[t] = h })
+
+  l.forEach((t) => { conf[t] = h * 24 * 365 })
+  m.forEach((t) => { conf[t] = h * 24 })
+  s.forEach((t) => { conf[t] = h })
+
   return conf
 }
 
