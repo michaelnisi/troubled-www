@@ -149,12 +149,16 @@ function add (req, res, next) {
   })
 }
 
+// Returns cache control configuration, using three categories long,
+// medium, and short. One can’t get this right, manual invalidation on
+// the CDN is still required during development.
 function ttl () {
-  var l = ['.js', '.jpg', '.png', '.svg', '.txt', '.ico']
-  var m = ['.xml', '.html', '.css']
-  var s = ['tweet.html', 'likes.html']
-  var conf = Object.create(null)
-  var h = 3600
+  const l = ['.css', '.js', '.jpg', '.png', '.svg', '.txt', '.ico']
+  const m = ['.xml', '.html']
+  const s = ['tweet.html', 'likes.html']
+
+  let conf = Object.create(null)
+  const h = 3600
 
   l.forEach((t) => { conf[t] = h * 24 * 365 })
   m.forEach((t) => { conf[t] = h * 24 })

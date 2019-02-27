@@ -68,7 +68,7 @@ setup_stud() {
 schedule_updates() {
   local url=localhost:${TROUBLED_PORT}/update
   local header="X-Hub-Signature: sha1=${TROUBLED_SHA1}"
-  local job="33 0,3,6,9,12,15,18,21 * * * curl -s -H  \"$header\" $url >/dev/null 2>&1"
+  local job="33 */3 * * * curl -s -H  \"$header\" $url >/dev/null 2>&1"
   if [ "$( crontab -l | grep -s $url )" ]; then
     echo "schedule_updates: nothing to do"
   else
